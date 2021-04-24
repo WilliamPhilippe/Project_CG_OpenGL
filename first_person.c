@@ -1,6 +1,8 @@
 #include <math.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <string.h>
+/*#include "stb_image.h"*/
 
 
 #include <GL/gl.h>
@@ -111,6 +113,8 @@ void draw_axis(int x, int y, int z);
 
 void draw_grid(int n);
 
+void display2();
+
 int load_obj(const char* path);
 
 
@@ -177,6 +181,7 @@ int load_obj(const char* path) {
 		
 		char* token = strtok(buffer, " ");
 	
+
 		if(strcmp(token, "v") == 0){
 			
 			vertices[vertex_count].x = atof(strtok(NULL, " "));
@@ -210,6 +215,25 @@ int load_obj(const char* path) {
 	fclose(fp);
 
 	return 1;
+}
+
+void display2() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	float t = 1.0f * glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+	
+	int i;
+	glBegin(GL_POLYGON);
+	for(i = 0;i < VERTEX_COUNT;i++){
+		glNormal3f(NORMALS[i].x, NORMALS[i].y, NORMALS[i].z);
+		glVertex3f(VERTICES[i].x, VERTICES[i].y, VERTICES[i].z);
+	}
+	glEnd();
+
+	glutSwapBuffers();
 }
 
 void drawElephant()
@@ -248,12 +272,6 @@ void display() {
 	Vec3 center = {eye.x + fwd.x, eye.y + fwd.y, eye.z + fwd.z};
 
 	gluLookAt(eye.x, eye.y, eye.z, center.x, center.y, center.z, u.x, u.y, u.z); 
-
-	/*
-
-	drawElephant();
-
-*/
 
 	draw_grid(10);
 	draw_axis(1, 1, 1);
@@ -347,7 +365,7 @@ void draw_walls() {
 		
 		
 		
-		/*glColor3f(BLACK);
+		glColor3f(BLACK);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaIndeces);
 
 		glColor3f(BLACK);
@@ -368,13 +386,19 @@ void draw_walls() {
 		glColor3f(LARANJA);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, tetoIndices);
 
-		/*glColor3f(CINZA);
-    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);*/
+		glColor3f(CINZA);
+    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);
 
-		glColor3f(LARANJA);
-    glDrawElements(GL_POLYGON, 8, GL_UNSIGNED_BYTE, mesa);
+		glColor3f(RED);
+		glDrawElements(GL_POLYGON, VERTEX_COUNT, GL_UNSIGNED_BYTE, VERTICES);
 		
-
+		int i;
+	glBegin(GL_POLYGON);
+	for(i = 0;i < VERTEX_COUNT;i++){
+		glNormal3f(NORMALS[i].x, NORMALS[i].y, NORMALS[i].z);
+		glVertex3f(VERTICES[i].x, VERTICES[i].y, VERTICES[i].z);
+	}
+	glEnd();
 
 }
 
