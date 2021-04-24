@@ -4,6 +4,7 @@
 
 
 #include <GL/gl.h>
+#include <GL/glut.h>
 #include <GL/freeglut.h>
 
 
@@ -73,6 +74,12 @@ Transform CAM;
 int KEYBOARD[128] = {0};
 Vec2 MOTION;
 
+#define MAX_VERTICES 100000
+
+int VERTEX_COUNT;
+Vec3 VERTICES[MAX_VERTICES];
+Vec3 NORMALS[MAX_VERTICES];
+Vec2 TEX_COORDS[MAX_VERTICES];
 
 void init_gl();
 
@@ -91,12 +98,20 @@ void keyboard_up(unsigned char key, int x, int y);
 
 void reshape(int width, int height);
 
+void drawElephant();
+
+void draw_walls();
+
+
+
 
 /*// Drawing utils */
 
 void draw_axis(int x, int y, int z);
 
 void draw_grid(int n);
+
+int load_obj(const char* path);
 
 
 /*// Math utils */
@@ -127,10 +142,87 @@ int main(int argc, char** argv) {
 
 	CAM.position = (Vec3) {0.0f, 2.0f, 0.0f};
 	CAM.rotation = (Vec3) {-90.0f, 0.0f, 0.0f};
+
+	if(!load_obj("table-1.obj")) {
+		perror("Erro ao abrir o arquivo");
+		return -1;
+	}
 	
 	glutMainLoop();
 
 	return 0;
+}
+
+GLuint elephant;
+float elephantrot;
+char ch='1';
+
+int load_obj(const char* path) {
+	FILE* fp = fopen(path, "r");
+
+	if(!fp)
+		return 0;
+
+	char buffer[512] = "";
+	int vertex_count = 0;
+	int normal_count = 0;
+	int tex_coord_count = 0;
+	Vec3 vertices[MAX_VERTICES];
+	Vec3 normals[MAX_VERTICES];
+	Vec2 tex_coords[MAX_VERTICES];
+
+	while(fgets(buffer, 512, fp)){
+		if(buffer[0] == '#') /*/ Comment */
+			continue;
+		
+		char* token = strtok(buffer, " ");
+	
+		if(strcmp(token, "v") == 0){
+			
+			vertices[vertex_count].x = atof(strtok(NULL, " "));
+			vertices[vertex_count].y = atof(strtok(NULL, " "));
+			vertices[vertex_count].z = atof(strtok(NULL, " "));
+			vertex_count++;
+		}
+		else if(strcmp(token, "vn") == 0) {
+			
+			normals[normal_count].x = atof(strtok(NULL, " "));
+			normals[normal_count].y = atof(strtok(NULL, " "));
+			normals[normal_count].z = atof(strtok(NULL, " "));
+			normal_count++;
+		}
+		else if(strcmp(token, "vt") == 0) {
+			tex_coords[tex_coord_count].x = atof(strtok(NULL, " "));
+			tex_coords[tex_coord_count].y = -atof(strtok(NULL, " "));
+			tex_coord_count++;
+		}
+		else if(strcmp(token, "f") == 0) {
+			int i;
+			for(i = 0;i < 3;i++){
+				VERTICES[VERTEX_COUNT] = vertices[atoi(strtok(NULL, "/")) - 1];
+				TEX_COORDS[VERTEX_COUNT] = tex_coords[atoi(strtok(NULL, "/")) - 1];
+				NORMALS[VERTEX_COUNT] = normals[atoi(strtok(NULL, " ")) - 1];
+				VERTEX_COUNT++;
+			}
+		}
+	}
+
+	fclose(fp);
+
+	return 1;
+}
+
+void drawElephant()
+{
+    glPushMatrix();
+    glTranslatef(0,-40.00,-105);
+    glColor3f(1.0,0.23,0.27);
+    glScalef(211,211,211);
+    glRotatef(elephantrot,0,1,0);
+    glCallList(elephant);
+    glPopMatrix();
+    elephantrot=elephantrot+0.6;
+    if(elephantrot>360)elephantrot=elephantrot-360;
 }
 
 
@@ -157,14 +249,21 @@ void display() {
 
 	gluLookAt(eye.x, eye.y, eye.z, center.x, center.y, center.z, u.x, u.y, u.z); 
 
+	/*
+
+	drawElephant();
+
+*/
+
 	draw_grid(10);
 	draw_axis(1, 1, 1);
 	draw_walls();
 
+
 	glutSwapBuffers();
 }
 
-static GLfloat vertices[72]={
+static GLfloat vertices[96]={
    /* vértices das paredes e teto */
    10.0,  0.0,   -10.0, /* 0 */
    10.0,  5.0,   -10.0, /* 1 */
@@ -198,6 +297,17 @@ static GLfloat vertices[72]={
 	8.0, 4.0, -9.99, /* 21 */
 	5.0, 4.0, -9.99, /* 22 */
 	5.0, 0.0, -9.99,  /* 23 */
+
+	/* vertices mesa */
+	7.0, 7.89, -4.5, /* 24 */
+	7.0, 7.7, -4.5, /* 25 */
+	7.00000, 7.89000, 4.50000, /* 26 */
+	7.00000, 7.71000, 4.50000, /* 27 */
+	7.00000, 7.89000, -4.50000, /* 28 */
+	-7.00000, 7.71000, -4.50000, /* 29 */
+	-7.00000, 7.89000, 4.50000, /* 30 */ 
+	-7.00000, 7.71000, 4.50000,/* 31 */
+
 };
 
 static GLubyte trasIndices[] = {1,2,3,0};
@@ -209,6 +319,8 @@ static GLubyte frenteIndices[] = {7,4,5,6};
 static GLubyte rightIndices[] = {7,6,1,0};
 static GLubyte tetoIndices[] = {5,2,1,6};
 static GLubyte pisoIndices[] = {8,9,11,10};
+
+static GLubyte mesa[] = {31,30,29,28,27,26,25,24};
 
 
 
@@ -235,7 +347,7 @@ void draw_walls() {
 		
 		
 		
-		glColor3f(BLACK);
+		/*glColor3f(BLACK);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaIndeces);
 
 		glColor3f(BLACK);
@@ -259,6 +371,8 @@ void draw_walls() {
 		/*glColor3f(CINZA);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);*/
 
+		glColor3f(LARANJA);
+    glDrawElements(GL_POLYGON, 8, GL_UNSIGNED_BYTE, mesa);
 		
 
 
