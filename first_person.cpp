@@ -2,22 +2,16 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
-/*#include "stb_image.h"*/
-
 
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <GL/freeglut.h>
-
-
-/*// Colors */
 
 #define BLACK 0.0f, 0.0f, 0.0f
 #define RED 1.0f, 0.0f, 0.0f
 #define GREEN 0.0f, 1.0f, 0.0f
 #define BLUE 0.0f, 0.0f, 1.0f
 #define WHITE 1.0f, 1.0f, 1.0f
-
 #define AZUL     0.0, 0.0, 1.0
 #define VERMELHO 1.0, 0.0, 0.0
 #define AMARELO  1.0, 1.0, 0.0
@@ -27,27 +21,20 @@
 #define ROSEO    0.7, 0.1, 0.6
 #define CINZA    0.6, 0.6, 0.6
 
-
-/*// Math */
-
 #define ORIGIN 0.0f, 0.0f, 0.0f
 #define RIGHT 1.0f, 0.0f, 0.0f
 #define UP 0.0f, 1.0f, 0.0f
 #define FORWARD 0.0f, 0.0f, -1.0f
 
 
-/*// Data types */
-
 struct Vec2 {
 	float x, y;
 };
-
 typedef struct Vec2 Vec2;
 
 struct Vec3 {
 	float x, y, z;
 };
-
 typedef struct Vec3 Vec3;
 
 struct Transform {
@@ -55,17 +42,11 @@ struct Transform {
 	Vec3 rotation;
 	Vec3 scale;
 };
-
 typedef struct Transform Transform;
 
 
-/*// Constants */
-
 const float DEG2RAD = M_PI / 180.0f;
 const float RAD2DEG = 180.0f / M_PI;
-
-
-/*// Global variables */
 
 Vec2 WINDOW_SIZE = {640, 480};
 Vec2 WINDOW_CENTER = {320, 240};
@@ -76,54 +57,30 @@ Transform CAM;
 int KEYBOARD[128] = {0};
 Vec2 MOTION;
 
-#define MAX_VERTICES 100000
+char ch='1';
 
+#define MAX_VERTICES 100000
 int VERTEX_COUNT;
 Vec3 VERTICES[MAX_VERTICES];
 Vec3 NORMALS[MAX_VERTICES];
 Vec2 TEX_COORDS[MAX_VERTICES];
 
 void init_gl();
-
-
-/*// Callbacks */
-
 void display();
-
 void idle();
-
 void motion(int x, int y);
-
 void keyboard(unsigned char key, int x, int y);
-
 void keyboard_up(unsigned char key, int x, int y);
-
 void reshape(int width, int height);
-
-void drawElephant();
-
 void draw_walls();
-
-
-
-
-/*// Drawing utils */
-
 void draw_axis(int x, int y, int z);
-
 void draw_grid(int n);
-
 void display2();
-
 int load_obj(const char* path);
 
 
-/*// Math utils */
-
 Vec3 forward(Transform* t);
-
 Vec3 right(Transform* t);
-
 Vec3 up(Transform* t);
 
 
@@ -157,9 +114,7 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
-GLuint elephant;
-float elephantrot;
-char ch='1';
+
 
 int load_obj(const char* path) {
 	FILE* fp = fopen(path, "r");
@@ -236,28 +191,11 @@ void display2() {
 	glutSwapBuffers();
 }
 
-void drawElephant()
-{
-    glPushMatrix();
-    glTranslatef(0,-40.00,-105);
-    glColor3f(1.0,0.23,0.27);
-    glScalef(211,211,211);
-    glRotatef(elephantrot,0,1,0);
-    glCallList(elephant);
-    glPopMatrix();
-    elephantrot=elephantrot+0.6;
-    if(elephantrot>360)elephantrot=elephantrot-360;
-}
-
-
 void init_gl() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 }
-
-
-/*// Callbacks */
 
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -265,7 +203,6 @@ void display() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	/*// View matrix */
 	Vec3 fwd = forward(&CAM);
 	Vec3 u = up(&CAM);
 	Vec3 eye = CAM.position;
@@ -340,13 +277,7 @@ static GLubyte pisoIndices[] = {8,9,11,10};
 
 static GLubyte mesa[] = {31,30,29,28,27,26,25,24};
 
-
-
-
-
-
 static int eixoy, eixox;
-
 
 void draw_walls() {
     glClear(GL_DEPTH_BUFFER_BIT);    
@@ -448,7 +379,7 @@ void keyboard(unsigned char key, int x, int y){
 
 	switch (key) {
   case 'a':
-    printf("%d, %d\n",x,y);
+    /*printf("%d, %d\n",x,y);*/
     break;
   case 'y':
     eixoy = (eixoy + 5) % 360;
@@ -480,9 +411,7 @@ void reshape(int width, int height) {
 	gluPerspective(FOVY, aspect, ZNEAR, ZFAR);
 }
 
-
 /*// Drawing utils */
-
 void draw_axis(int x, int y, int z) {
 	glLineWidth(3.0f);
 	glBegin(GL_LINES);
@@ -521,8 +450,6 @@ void draw_grid(int n) {
 	}
 	glEnd();
 }
-
-
 /*// Math utils */
 
 Vec3 forward(Transform* t) {
