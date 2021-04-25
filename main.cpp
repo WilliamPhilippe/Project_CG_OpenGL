@@ -99,6 +99,11 @@ Vec3 BOOK_VERTICES[MAX_VERTICES];
 Vec3 BOOK_NORMALS[MAX_VERTICES];
 Vec2 BOOK_TEX_COORDS[MAX_VERTICES];
 
+int CUP_VERTEX_COUNT;
+Vec3 CUP_VERTICES[MAX_VERTICES];
+Vec3 CUP_NORMALS[MAX_VERTICES];
+Vec2 CUP_TEX_COORDS[MAX_VERTICES];
+
 void init_gl();
 void display();
 void idle();
@@ -140,6 +145,10 @@ objl::Loader bookLoader;
 objl::MeshInfo book1Mesh;
 objl::MeshInfo book2Mesh;
 
+objl::Loader cupLoader;
+objl::MeshInfo cup1Mesh;
+objl::MeshInfo cup2Mesh;
+
 void init_gl() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -161,6 +170,9 @@ void init_gl() {
 
 	book1Mesh = bookLoader.LoadedMeshes[0].setup();
 	book2Mesh = bookLoader.LoadedMeshes[1].setup();
+
+	cup1Mesh = cupLoader.LoadedMeshes[0].setup();
+	cup2Mesh = cupLoader.LoadedMeshes[1].setup();
 }
 
 void display() {
@@ -358,6 +370,33 @@ void draw_walls() {
             glNormalPointer(GL_FLOAT, 0, &book2Mesh.vertices_normals[0]);
             glDrawElements(GL_TRIANGLES, book2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &book2Mesh.indices_pointers[0]);
         glPopMatrix();
+    glPopMatrix();
+
+	glPushMatrix();
+			cup1Mesh.material.active();
+			cup1Mesh.material.dye();
+      glScalef(0.04, 0.04, 0.04);
+      glTranslatef(208, 41, -5);
+			glRotatef ((GLfloat) 90, 0.0, 1.0, 0.0);
+
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+			glColor3f(BLACK);
+
+			glVertexPointer(3, GL_FLOAT, 0, &cup1Mesh.vertices_pointers[0]);
+      glNormalPointer(GL_FLOAT, 0, &cup1Mesh.vertices_normals[0]);
+      glDrawElements(GL_TRIANGLES, cup1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &cup1Mesh.indices_pointers[0]);
+
+		// 	glPushMatrix();
+        //     cup2Mesh.material.active();
+        //     cup2Mesh.material.dye();
+		// 				glColor3f(WHITE);
+
+        //     glVertexPointer(3, GL_FLOAT, 0, &cup2Mesh.vertices_pointers[0]);
+        //     glNormalPointer(GL_FLOAT, 0, &cup2Mesh.vertices_normals[0]);
+        //     glDrawElements(GL_TRIANGLES, cup2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &book2Mesh.indices_pointers[0]);
+        // glPopMatrix();
     glPopMatrix();
 
 		glPushMatrix();
@@ -634,6 +673,7 @@ int main(int argc, char** argv) {
 	chairLoader.LoadFile("./obj/chair/chair.obj");
 	pillowLoader.LoadFile("./obj/pillow/pillow.obj");
 	bookLoader.LoadFile("./obj/book/book.obj");
+	cupLoader.LoadFile("./obj/glass/glass.obj");
 
 
 	init_gl();
