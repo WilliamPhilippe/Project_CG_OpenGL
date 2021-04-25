@@ -126,6 +126,10 @@ objl::MeshInfo chair1Mesh;
 objl::MeshInfo chair2Mesh;
 objl::MeshInfo chair3Mesh;
 
+objl::Loader pillowLoader;
+objl::MeshInfo pillow1Mesh;
+objl::MeshInfo pillow2Mesh;
+
 void init_gl() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -141,7 +145,8 @@ void init_gl() {
 	chair2Mesh = chairLoader.LoadedMeshes[1].setup();
 	chair3Mesh = chairLoader.LoadedMeshes[2].setup();
 
-
+	pillow1Mesh = pillowLoader.LoadedMeshes[1].setup();
+	pillow2Mesh = pillowLoader.LoadedMeshes[0].setup();
 }
 
 void display() {
@@ -381,6 +386,32 @@ void draw_walls() {
 			
     glPopMatrix();
 
+		glPushMatrix();
+			pillow1Mesh.material.active();
+			pillow1Mesh.material.dye();
+			// glRotatef ((GLfloat) -90, 0.0, 1.0, 0.0);
+      glScalef(0.03, 0.03, 0.03);
+      glTranslatef(-260, 38, 250);
+
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+			glColor3f(AMARELO);
+
+			glVertexPointer(3, GL_FLOAT, 0, &pillow1Mesh.vertices_pointers[0]);
+      glNormalPointer(GL_FLOAT, 0, &pillow1Mesh.vertices_normals[0]);
+      glDrawElements(GL_TRIANGLES, pillow1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &pillow1Mesh.indices_pointers[0]);
+
+			// glPushMatrix();
+			// 				pillow2Mesh.material.active();
+			// 				pillow2Mesh.material.dye();
+			// 				glColor3f(AMARELO);
+
+			// 				glVertexPointer(3, GL_FLOAT, 0, &pillow2Mesh.vertices_pointers[0]);
+			// 				glNormalPointer(GL_FLOAT, 0, &pillow2Mesh.vertices_normals[0]);
+			// 				glDrawElements(GL_TRIANGLES, pillow2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &pillow2Mesh.indices_pointers[0]);
+			// 	glPopMatrix();
+    glPopMatrix();
 }
 
 void idle() {
@@ -572,6 +603,7 @@ int main(int argc, char** argv) {
 	tableLoader.LoadFile("./obj/table/table.obj");
 	bedLoader.LoadFile("./obj/bed/bed.obj");
 	chairLoader.LoadFile("./obj/chair/chair.obj");
+	pillowLoader.LoadFile("./obj/pillow/pillow.obj");
 
 
 	init_gl();
