@@ -1,3 +1,8 @@
+
+#define GLEW_STATIC
+
+#include <GL/glew.h>
+
 #include <math.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -6,6 +11,11 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <GL/freeglut.h>
+#include <unistd.h>
+
+using std::cout;
+
+#include "./libs/obj_loader.h"
 
 #define BLACK 0.0f, 0.0f, 0.0f
 #define RED 1.0f, 0.0f, 0.0f
@@ -26,8 +36,6 @@
 #define UP 0.0f, 1.0f, 0.0f
 #define FORWARD 0.0f, 0.0f, -1.0f
 
-using std::cout;
-
 struct Vec2 {
 	float x, y;
 };
@@ -44,7 +52,6 @@ struct Transform {
 	Vec3 scale;
 };
 typedef struct Transform Transform;
-
 
 const float DEG2RAD = M_PI / 180.0f;
 const float RAD2DEG = 180.0f / M_PI;
@@ -94,60 +101,15 @@ void draw_grid(int n);
 void display2();
 int load_obj(const char* path, int type);
 
-
 Vec3 forward(Transform* t);
 Vec3 right(Transform* t);
 Vec3 up(Transform* t);
 
+// OBJECTS
 
-int main(int argc, char** argv) {
-	glutInit(&argc, argv);
-
-	// if(!load_obj("table-1.obj", 1 /*table*/)) {
-	// 	perror("Erro ao abrir table");
-	// 	return -1;
-	// }
-
-	if(!load_obj("bed-2.obj", 1 /*BED*/)) {
-		perror("Erro ao abrir BED");
-		return -1;
-	}
-
-	// if(!load_obj("pillow.obj", 3 /*pillow*/)) {
-	// 	perror("Erro ao abrir pillow");
-	// 	return -1;
-	// }
-
-	// if(!load_obj("chair.obj", 4 /*chair*/)) {
-	// 	perror("Erro ao abrir chair");
-	// 	return -1;
-	// }
-
-	glutInitWindowSize(WINDOW_SIZE.x, WINDOW_SIZE.y);
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutCreateWindow("Hue");
-	glutWarpPointer(WINDOW_CENTER.x, WINDOW_CENTER.y);	
-
-	glutDisplayFunc(display);
-	glutIdleFunc(idle);
-	glutPassiveMotionFunc(motion);
-	glutKeyboardFunc(keyboard);
-	glutKeyboardUpFunc(keyboard_up);
-	glutReshapeFunc(reshape);
-
-	init_gl();
-
-	CAM.position = (Vec3) {0.0f, 2.0f, 0.0f};
-	CAM.rotation = (Vec3) {-90.0f, 0.0f, 0.0f};
-
-	
-	
-	glutMainLoop();
-
-	return 0;
-}
-
-
+objl::Loader tableLoader;
+objl::MeshInfo tableMesh;
+objl::MeshInfo tableSeatMesh;
 
 int load_obj(const char* path, int type) {
 	FILE* fp = fopen(path, "r");
@@ -235,29 +197,13 @@ int load_obj(const char* path, int type) {
 	return 1;
 }
 
-// void display2() {
-// 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-// 	glMatrixMode(GL_MODELVIEW);
-// 	glLoadIdentity();
-// 	gluLookAt(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-// 	float t = 1.0f * glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
-	
-// 	int i;
-// 	glBegin(GL_POLYGON);
-// 	for(i = 0;i < VERTEX_COUNT;i++){
-// 		glNormal3f(NORMALS[i].x, NORMALS[i].y, NORMALS[i].z);
-// 		glVertex3f(VERTICES[i].x, VERTICES[i].y, VERTICES[i].z);
-// 	}
-// 	glEnd();
-
-// 	glutSwapBuffers();
-// }
-
 void init_gl() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+
+	tableMesh = tableLoader.LoadedMeshes[0].setup();
+	tableSeatMesh = tableLoader.LoadedMeshes[1].setup();
 }
 
 void display() {
@@ -276,8 +222,6 @@ void display() {
 	draw_grid(10);
 	draw_axis(1, 1, 1);
 	draw_walls();
-
-	
 
 	glutSwapBuffers();
 }
@@ -407,14 +351,37 @@ void draw_walls() {
 		glColor3f(RED);
 		glDrawElements(GL_POLYGON, TABLE_VERTEX_COUNT, GL_UNSIGNED_BYTE, TABLE_VERTICES);
 
-		int i;
-		glBegin(GL_TRIANGLES);
-		for(i = 0;i < TABLE_VERTEX_COUNT;i++){
-			glNormal3f(TABLE_NORMALS[i].x, TABLE_NORMALS[i].y, TABLE_NORMALS[i].z);
-			glVertex3f(TABLE_VERTICES[i].x*2 + 5.0, TABLE_VERTICES[i].y*2, TABLE_VERTICES[i].z*2 + 9.0);
-		}
+		// int i;
+		// glBegin(GL_TRIANGLES);
+		// for(i = 0;i < TABLE_VERTEX_COUNT;i++){
+		// 	glNormal3f(TABLE_NORMALS[i].x, TABLE_NORMALS[i].y, TABLE_NORMALS[i].z);
+		// 	glVertex3f(TABLE_VERTICES[i].x*2 + 5.0, TABLE_VERTICES[i].y*2, TABLE_VERTICES[i].z*2 + 9.0);
+		// }
+				// glEnd();
+		// 
 
-		glEnd();
+		glPushMatrix();
+			tableMesh.material.active();
+			tableMesh.material.dye();
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+			glColor3f(RED);
+
+			glVertexPointer(3, GL_FLOAT, 0, &tableMesh.vertices_pointers[0]);
+      glNormalPointer(GL_FLOAT, 0, &tableMesh.vertices_normals[0]);
+      glDrawElements(GL_TRIANGLES, tableMesh.indices_pointers.size(), GL_UNSIGNED_INT, &tableMesh.indices_pointers[0]);
+
+			glPushMatrix();
+            tableSeatMesh.material.active();
+            tableSeatMesh.material.dye();
+						glColor3f(RED);
+
+            glVertexPointer(3, GL_FLOAT, 0, &tableSeatMesh.vertices_pointers[0]);
+            glNormalPointer(GL_FLOAT, 0, &tableSeatMesh.vertices_normals[0]);
+            glDrawElements(GL_TRIANGLES, tableSeatMesh.indices_pointers.size(), GL_UNSIGNED_INT, &tableSeatMesh.indices_pointers[0]);
+        glPopMatrix();
+    glPopMatrix();
 
 }
 
@@ -587,4 +554,31 @@ Vec3 right(Transform* t) {
 	v.z = -sin(b);
 
 	return v;
+}
+
+int main(int argc, char** argv) {
+	glutInit(&argc, argv);
+
+	glutInitWindowSize(WINDOW_SIZE.x, WINDOW_SIZE.y);
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+	glutCreateWindow("Hue");
+	glutWarpPointer(WINDOW_CENTER.x, WINDOW_CENTER.y);	
+
+	glutDisplayFunc(display);
+	glutIdleFunc(idle);
+	glutPassiveMotionFunc(motion);
+	glutKeyboardFunc(keyboard);
+	glutKeyboardUpFunc(keyboard_up);
+	glutReshapeFunc(reshape);
+
+	tableLoader.LoadFile("./obj/table/table.obj");
+
+	init_gl();
+
+	CAM.position = (Vec3) {0.0f, 2.0f, 0.0f};
+	CAM.rotation = (Vec3) {-90.0f, 0.0f, 0.0f};
+
+	glutMainLoop();
+
+	return 0;
 }
