@@ -111,91 +111,9 @@ objl::Loader tableLoader;
 objl::MeshInfo tableMesh;
 objl::MeshInfo tableSeatMesh;
 
-int load_obj(const char* path, int type) {
-	FILE* fp = fopen(path, "r");
-
-	if(!fp)
-		return 0;
-
-	char buffer[512] = "";
-	int vertex_count = 0;
-	int normal_count = 0;
-	int tex_coord_count = 0;
-	Vec3 vertices[MAX_VERTICES];
-	Vec3 normals[MAX_VERTICES];
-	Vec2 tex_coords[MAX_VERTICES];
-
-	while(fgets(buffer, 512, fp)){
-		if(buffer[0] == '#') /*/ Comment */
-			continue;
-		
-		char* token = strtok(buffer, " ");
-	
-
-		if(strcmp(token, "v") == 0){
-			
-			vertices[vertex_count].x = atof(strtok(NULL, " "));
-			vertices[vertex_count].y = atof(strtok(NULL, " "));
-			vertices[vertex_count].z = atof(strtok(NULL, " "));
-			vertex_count++;
-		}
-		else if(strcmp(token, "vn") == 0) {
-			
-			normals[normal_count].x = atof(strtok(NULL, " "));
-			normals[normal_count].y = atof(strtok(NULL, " "));
-			normals[normal_count].z = atof(strtok(NULL, " "));
-			normal_count++;
-		}
-		else if(strcmp(token, "vt") == 0) {
-
-			tex_coords[tex_coord_count].x = atof(strtok(NULL, " "));
-			tex_coords[tex_coord_count].y = -atof(strtok(NULL, " "));
-			tex_coord_count++;
-
-		}
-		else if(strcmp(token, "f") == 0) {
-			int i;
-			for(i = 0;i < 3;i++){
-				
-				switch (type)
-				{
-				case 1:
-					TABLE_VERTICES[TABLE_VERTEX_COUNT] = vertices[atoi(strtok(NULL, "/")) - 1];
-					TABLE_TEX_COORDS[TABLE_VERTEX_COUNT] = tex_coords[atoi(strtok(NULL, "/")) - 1];
-					TABLE_NORMALS[TABLE_VERTEX_COUNT] = normals[atoi(strtok(NULL, " ")) - 1];
-					TABLE_VERTEX_COUNT++;
-					break;
-				case 2:
-					BED_VERTICES[BED_VERTEX_COUNT] = vertices[atoi(strtok(NULL, "/")) - 1];
-					BED_TEX_COORDS[BED_VERTEX_COUNT] = tex_coords[atoi(strtok(NULL, "/")) - 1];
-					BED_NORMALS[BED_VERTEX_COUNT] = normals[atoi(strtok(NULL, " ")) - 1];
-					BED_VERTEX_COUNT++;
-					break;
-				case 3:
-					PILLOW_VERTICES[PILLOW_VERTEX_COUNT] = vertices[atoi(strtok(NULL, "/")) - 1];
-					PILLOW_TEX_COORDS[PILLOW_VERTEX_COUNT] = tex_coords[atoi(strtok(NULL, "/")) - 1];
-					PILLOW_NORMALS[PILLOW_VERTEX_COUNT] = normals[atoi(strtok(NULL, " ")) - 1];
-					PILLOW_VERTEX_COUNT++;
-					break;
-				case 4:
-					CHAIR_VERTICES[CHAIR_VERTEX_COUNT] = vertices[atoi(strtok(NULL, "/")) - 1];
-					CHAIR_TEX_COORDS[CHAIR_VERTEX_COUNT] = tex_coords[atoi(strtok(NULL, "/")) - 1];
-					CHAIR_NORMALS[CHAIR_VERTEX_COUNT] = normals[atoi(strtok(NULL, " ")) - 1];
-					CHAIR_VERTEX_COUNT++;
-					break;
-				
-				default:
-					break;
-				}
-				
-			}
-		}
-	}
-
-	fclose(fp);
-
-	return 1;
-}
+objl::Loader bedLoader;
+objl::MeshInfo bed1Mesh;
+objl::MeshInfo bed2Mesh;
 
 void init_gl() {
 	glEnable(GL_DEPTH_TEST);
@@ -204,6 +122,10 @@ void init_gl() {
 
 	tableMesh = tableLoader.LoadedMeshes[0].setup();
 	tableSeatMesh = tableLoader.LoadedMeshes[1].setup();
+
+	bed1Mesh = bedLoader.LoadedMeshes[0].setup();
+	bed2Mesh = bedLoader.LoadedMeshes[1].setup();
+
 }
 
 void display() {
@@ -351,18 +273,12 @@ void draw_walls() {
 		glColor3f(RED);
 		glDrawElements(GL_POLYGON, TABLE_VERTEX_COUNT, GL_UNSIGNED_BYTE, TABLE_VERTICES);
 
-		// int i;
-		// glBegin(GL_TRIANGLES);
-		// for(i = 0;i < TABLE_VERTEX_COUNT;i++){
-		// 	glNormal3f(TABLE_NORMALS[i].x, TABLE_NORMALS[i].y, TABLE_NORMALS[i].z);
-		// 	glVertex3f(TABLE_VERTICES[i].x*2 + 5.0, TABLE_VERTICES[i].y*2, TABLE_VERTICES[i].z*2 + 9.0);
-		// }
-				// glEnd();
-		// 
-
 		glPushMatrix();
 			tableMesh.material.active();
 			tableMesh.material.dye();
+			glRotatef ((GLfloat) 90, 0.0, 1.0, 0.0);
+      glTranslatef(0, 0, 9);
+
 
 			glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_NORMAL_ARRAY);
@@ -380,6 +296,32 @@ void draw_walls() {
             glVertexPointer(3, GL_FLOAT, 0, &tableSeatMesh.vertices_pointers[0]);
             glNormalPointer(GL_FLOAT, 0, &tableSeatMesh.vertices_normals[0]);
             glDrawElements(GL_TRIANGLES, tableSeatMesh.indices_pointers.size(), GL_UNSIGNED_INT, &tableSeatMesh.indices_pointers[0]);
+        glPopMatrix();
+    glPopMatrix();
+
+		glPushMatrix();
+			bed1Mesh.material.active();
+			bed1Mesh.material.dye();
+			glRotatef ((GLfloat) 90, 0.0, 1.0, 0.0);
+      glTranslatef(0, 0, 9);
+
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+			glColor3f(AMARELO);
+
+			glVertexPointer(3, GL_FLOAT, 0, &bed1Mesh.vertices_pointers[0]);
+      glNormalPointer(GL_FLOAT, 0, &bed1Mesh.vertices_normals[0]);
+      glDrawElements(GL_TRIANGLES, bed1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &bed1Mesh.indices_pointers[0]);
+
+			glPushMatrix();
+            bed2Mesh.material.active();
+            bed2Mesh.material.dye();
+						glColor3f(AMARELO);
+
+            glVertexPointer(3, GL_FLOAT, 0, &bed2Mesh.vertices_pointers[0]);
+            glNormalPointer(GL_FLOAT, 0, &bed2Mesh.vertices_normals[0]);
+            glDrawElements(GL_TRIANGLES, bed2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &bed2Mesh.indices_pointers[0]);
         glPopMatrix();
     glPopMatrix();
 
@@ -572,6 +514,8 @@ int main(int argc, char** argv) {
 	glutReshapeFunc(reshape);
 
 	tableLoader.LoadFile("./obj/table/table.obj");
+	bedLoader.LoadFile("./obj/bed/bed.obj");
+
 
 	init_gl();
 
