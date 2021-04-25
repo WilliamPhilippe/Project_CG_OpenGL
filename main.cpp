@@ -30,6 +30,12 @@ using std::cout;
 #define LARANJA  0.8, 0.6, 0.1
 #define ROSEO    0.7, 0.1, 0.6
 #define CINZA    0.6, 0.6, 0.6
+#define PAREDE    0.87, 0.91, 0.92
+#define PAREDE2    0.57, 0.61, 0.62
+#define JANELA    0.407, 0.282, 0.098
+#define MESA    0.77, 0.81, 0.92
+
+
 
 #define ORIGIN 0.0f, 0.0f, 0.0f
 #define RIGHT 1.0f, 0.0f, 0.0f
@@ -115,6 +121,11 @@ objl::Loader bedLoader;
 objl::MeshInfo bed1Mesh;
 objl::MeshInfo bed2Mesh;
 
+objl::Loader chairLoader;
+objl::MeshInfo chair1Mesh;
+objl::MeshInfo chair2Mesh;
+objl::MeshInfo chair3Mesh;
+
 void init_gl() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -125,6 +136,11 @@ void init_gl() {
 
 	bed1Mesh = bedLoader.LoadedMeshes[0].setup();
 	bed2Mesh = bedLoader.LoadedMeshes[1].setup();
+
+	chair1Mesh = chairLoader.LoadedMeshes[0].setup();
+	chair2Mesh = chairLoader.LoadedMeshes[1].setup();
+	chair3Mesh = chairLoader.LoadedMeshes[2].setup();
+
 
 }
 
@@ -229,7 +245,7 @@ void draw_walls() {
 		glTranslatef(8.0, 0, -9.998);
 		glRotatef ((GLfloat) eixoPortay, 0.0, 1.0, 0.0);
 		
-		glColor3f(RED);
+		glColor3f(JANELA);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaMovIndices);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaMovTrazIndices);
 
@@ -239,7 +255,7 @@ void draw_walls() {
 		glTranslatef(-9.998, 0, 3.0);
 		glRotatef ((GLfloat) eixoJanelay, 0.0, 1.0, 0.0);
 
-		glColor3f(AMARELO);
+		glColor3f(JANELA);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaIndices);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaTrazIndices);
 
@@ -252,16 +268,16 @@ void draw_walls() {
 		glColor3f(BLACK);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaIndices);
 
-    glColor3f(BLUE);
+    glColor3f(PAREDE);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, trasIndices);
 
-    glColor3f(RED);
+    glColor3f(PAREDE2);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, leftIndices);
 
-    glColor3f(AMARELO);
+    glColor3f(PAREDE);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, frenteIndices);
 
-		glColor3f(VERDE);
+		glColor3f(PAREDE2);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, rightIndices);
 
 		glColor3f(LARANJA);
@@ -270,19 +286,20 @@ void draw_walls() {
 		// glColor3f(CINZA);
     // glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);
 
-		glColor3f(RED);
-		glDrawElements(GL_POLYGON, TABLE_VERTEX_COUNT, GL_UNSIGNED_BYTE, TABLE_VERTICES);
+		// glColor3f(RED);
+		// glDrawElements(GL_POLYGON, TABLE_VERTEX_COUNT, GL_UNSIGNED_BYTE, TABLE_VERTICES);
 
 		glPushMatrix();
 			tableMesh.material.active();
 			tableMesh.material.dye();
 			glRotatef ((GLfloat) 90, 0.0, 1.0, 0.0);
       glTranslatef(0, 0, 9);
+      glScalef(2, 2, 2);
 
 
 			glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_NORMAL_ARRAY);
-			glColor3f(RED);
+			glColor3f(JANELA);
 
 			glVertexPointer(3, GL_FLOAT, 0, &tableMesh.vertices_pointers[0]);
       glNormalPointer(GL_FLOAT, 0, &tableMesh.vertices_normals[0]);
@@ -291,7 +308,7 @@ void draw_walls() {
 			glPushMatrix();
             tableSeatMesh.material.active();
             tableSeatMesh.material.dye();
-						glColor3f(RED);
+						glColor3f(MESA);
 
             glVertexPointer(3, GL_FLOAT, 0, &tableSeatMesh.vertices_pointers[0]);
             glNormalPointer(GL_FLOAT, 0, &tableSeatMesh.vertices_normals[0]);
@@ -302,13 +319,13 @@ void draw_walls() {
 		glPushMatrix();
 			bed1Mesh.material.active();
 			bed1Mesh.material.dye();
-			glRotatef ((GLfloat) 90, 0.0, 1.0, 0.0);
-      glTranslatef(0, 0, 9);
+      glScalef(0.05, 0.05, 0.05);
+      glTranslatef(-160, 0,200);
 
 
 			glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_NORMAL_ARRAY);
-			glColor3f(AMARELO);
+			glColor3f(MESA);
 
 			glVertexPointer(3, GL_FLOAT, 0, &bed1Mesh.vertices_pointers[0]);
       glNormalPointer(GL_FLOAT, 0, &bed1Mesh.vertices_normals[0]);
@@ -317,12 +334,51 @@ void draw_walls() {
 			glPushMatrix();
             bed2Mesh.material.active();
             bed2Mesh.material.dye();
-						glColor3f(AMARELO);
+						glColor3f(MESA);
 
             glVertexPointer(3, GL_FLOAT, 0, &bed2Mesh.vertices_pointers[0]);
             glNormalPointer(GL_FLOAT, 0, &bed2Mesh.vertices_normals[0]);
             glDrawElements(GL_TRIANGLES, bed2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &bed2Mesh.indices_pointers[0]);
         glPopMatrix();
+    glPopMatrix();
+
+		glPushMatrix();
+			chair1Mesh.material.active();
+			chair1Mesh.material.dye();
+			glRotatef ((GLfloat) -90, 0.0, 1.0, 0.0);
+      glScalef(0.05, 0.05, 0.05);
+      glTranslatef(0, 0, -120);
+
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+			glColor3f(MESA);
+
+			glVertexPointer(3, GL_FLOAT, 0, &chair1Mesh.vertices_pointers[0]);
+      glNormalPointer(GL_FLOAT, 0, &chair1Mesh.vertices_normals[0]);
+      glDrawElements(GL_TRIANGLES, chair1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &chair1Mesh.indices_pointers[0]);
+
+			glPushMatrix();
+            chair2Mesh.material.active();
+            chair2Mesh.material.dye();
+						glColor3f(MESA);
+
+            glVertexPointer(3, GL_FLOAT, 0, &chair2Mesh.vertices_pointers[0]);
+            glNormalPointer(GL_FLOAT, 0, &chair2Mesh.vertices_normals[0]);
+            glDrawElements(GL_TRIANGLES, chair2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &chair2Mesh.indices_pointers[0]);
+
+						glPushMatrix();
+							chair3Mesh.material.active();
+							chair3Mesh.material.dye();
+							glColor3f(MESA);
+
+							glVertexPointer(3, GL_FLOAT, 0, &chair3Mesh.vertices_pointers[0]);
+							glNormalPointer(GL_FLOAT, 0, &chair3Mesh.vertices_normals[0]);
+							glDrawElements(GL_TRIANGLES, chair3Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &chair3Mesh.indices_pointers[0]);
+						glPopMatrix();
+      glPopMatrix();
+
+			
     glPopMatrix();
 
 }
@@ -515,6 +571,7 @@ int main(int argc, char** argv) {
 
 	tableLoader.LoadFile("./obj/table/table.obj");
 	bedLoader.LoadFile("./obj/bed/bed.obj");
+	chairLoader.LoadFile("./obj/chair/chair.obj");
 
 
 	init_gl();
