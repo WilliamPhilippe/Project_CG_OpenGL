@@ -125,6 +125,7 @@ objl::Loader chairLoader;
 objl::MeshInfo chair1Mesh;
 objl::MeshInfo chair2Mesh;
 objl::MeshInfo chair3Mesh;
+objl::MeshInfo chair4Mesh;
 
 objl::Loader pillowLoader;
 objl::MeshInfo pillow1Mesh;
@@ -141,9 +142,10 @@ void init_gl() {
 	bed1Mesh = bedLoader.LoadedMeshes[0].setup();
 	bed2Mesh = bedLoader.LoadedMeshes[1].setup();
 
-	chair1Mesh = chairLoader.LoadedMeshes[0].setup();
-	chair2Mesh = chairLoader.LoadedMeshes[1].setup();
-	chair3Mesh = chairLoader.LoadedMeshes[2].setup();
+	chair1Mesh = chairLoader.LoadedMeshes[1].setup();
+	chair2Mesh = chairLoader.LoadedMeshes[2].setup();
+	chair3Mesh = chairLoader.LoadedMeshes[3].setup();
+	// chair4Mesh = chairLoader.LoadedMeshes[0].setup();
 
 	pillow1Mesh = pillowLoader.LoadedMeshes[1].setup();
 	pillow2Mesh = pillowLoader.LoadedMeshes[0].setup();
@@ -288,11 +290,9 @@ void draw_walls() {
 		glColor3f(LARANJA);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, tetoIndices);
 
-		// glColor3f(CINZA);
-    // glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);
+		glColor3f(CINZA);
+    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);
 
-		// glColor3f(RED);
-		// glDrawElements(GL_POLYGON, TABLE_VERTEX_COUNT, GL_UNSIGNED_BYTE, TABLE_VERTICES);
 
 		glPushMatrix();
 			tableMesh.material.active();
@@ -372,18 +372,18 @@ void draw_walls() {
             glNormalPointer(GL_FLOAT, 0, &chair2Mesh.vertices_normals[0]);
             glDrawElements(GL_TRIANGLES, chair2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &chair2Mesh.indices_pointers[0]);
 
-						glPushMatrix();
+      glPopMatrix();
+
+			glPushMatrix();
 							chair3Mesh.material.active();
 							chair3Mesh.material.dye();
-							glColor3f(MESA);
+							glColor3f(PAREDE2);
 
 							glVertexPointer(3, GL_FLOAT, 0, &chair3Mesh.vertices_pointers[0]);
 							glNormalPointer(GL_FLOAT, 0, &chair3Mesh.vertices_normals[0]);
 							glDrawElements(GL_TRIANGLES, chair3Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &chair3Mesh.indices_pointers[0]);
-						glPopMatrix();
-      glPopMatrix();
 
-			
+			glPopMatrix();
     glPopMatrix();
 
 		glPushMatrix();
@@ -401,16 +401,6 @@ void draw_walls() {
 			glVertexPointer(3, GL_FLOAT, 0, &pillow1Mesh.vertices_pointers[0]);
       glNormalPointer(GL_FLOAT, 0, &pillow1Mesh.vertices_normals[0]);
       glDrawElements(GL_TRIANGLES, pillow1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &pillow1Mesh.indices_pointers[0]);
-
-			// glPushMatrix();
-			// 				pillow2Mesh.material.active();
-			// 				pillow2Mesh.material.dye();
-			// 				glColor3f(AMARELO);
-
-			// 				glVertexPointer(3, GL_FLOAT, 0, &pillow2Mesh.vertices_pointers[0]);
-			// 				glNormalPointer(GL_FLOAT, 0, &pillow2Mesh.vertices_normals[0]);
-			// 				glDrawElements(GL_TRIANGLES, pillow2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &pillow2Mesh.indices_pointers[0]);
-			// 	glPopMatrix();
     glPopMatrix();
 }
 
