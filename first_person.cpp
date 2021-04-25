@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <iostream>
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <GL/freeglut.h>
@@ -26,6 +26,7 @@
 #define UP 0.0f, 1.0f, 0.0f
 #define FORWARD 0.0f, 0.0f, -1.0f
 
+using std::cout;
 
 struct Vec2 {
 	float x, y;
@@ -59,11 +60,26 @@ Vec2 MOTION;
 
 char ch='1';
 
-#define MAX_VERTICES 100000
-int VERTEX_COUNT;
-Vec3 VERTICES[MAX_VERTICES];
-Vec3 NORMALS[MAX_VERTICES];
-Vec2 TEX_COORDS[MAX_VERTICES];
+#define MAX_VERTICES 5000
+int TABLE_VERTEX_COUNT;
+Vec3 TABLE_VERTICES[MAX_VERTICES];
+Vec3 TABLE_NORMALS[MAX_VERTICES];
+Vec2 TABLE_TEX_COORDS[MAX_VERTICES];
+
+int BED_VERTEX_COUNT;
+Vec3 BED_VERTICES[MAX_VERTICES];
+Vec3 BED_NORMALS[MAX_VERTICES];
+Vec2 BED_TEX_COORDS[MAX_VERTICES];
+
+int CHAIR_VERTEX_COUNT;
+Vec3 CHAIR_VERTICES[MAX_VERTICES];
+Vec3 CHAIR_NORMALS[MAX_VERTICES];
+Vec2 CHAIR_TEX_COORDS[MAX_VERTICES];
+
+int PILLOW_VERTEX_COUNT;
+Vec3 PILLOW_VERTICES[MAX_VERTICES];
+Vec3 PILLOW_NORMALS[MAX_VERTICES];
+Vec2 PILLOW_TEX_COORDS[MAX_VERTICES];
 
 void init_gl();
 void display();
@@ -76,7 +92,7 @@ void draw_walls();
 void draw_axis(int x, int y, int z);
 void draw_grid(int n);
 void display2();
-int load_obj(const char* path);
+int load_obj(const char* path, int type);
 
 
 Vec3 forward(Transform* t);
@@ -86,6 +102,26 @@ Vec3 up(Transform* t);
 
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
+
+	// if(!load_obj("table-1.obj", 1 /*table*/)) {
+	// 	perror("Erro ao abrir table");
+	// 	return -1;
+	// }
+
+	if(!load_obj("bed-2.obj", 1 /*BED*/)) {
+		perror("Erro ao abrir BED");
+		return -1;
+	}
+
+	// if(!load_obj("pillow.obj", 3 /*pillow*/)) {
+	// 	perror("Erro ao abrir pillow");
+	// 	return -1;
+	// }
+
+	// if(!load_obj("chair.obj", 4 /*chair*/)) {
+	// 	perror("Erro ao abrir chair");
+	// 	return -1;
+	// }
 
 	glutInitWindowSize(WINDOW_SIZE.x, WINDOW_SIZE.y);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
@@ -104,10 +140,7 @@ int main(int argc, char** argv) {
 	CAM.position = (Vec3) {0.0f, 2.0f, 0.0f};
 	CAM.rotation = (Vec3) {-90.0f, 0.0f, 0.0f};
 
-	if(!load_obj("table-1.obj")) {
-		perror("Erro ao abrir o arquivo");
-		return -1;
-	}
+	
 	
 	glutMainLoop();
 
@@ -116,7 +149,7 @@ int main(int argc, char** argv) {
 
 
 
-int load_obj(const char* path) {
+int load_obj(const char* path, int type) {
 	FILE* fp = fopen(path, "r");
 
 	if(!fp)
@@ -152,17 +185,47 @@ int load_obj(const char* path) {
 			normal_count++;
 		}
 		else if(strcmp(token, "vt") == 0) {
+
 			tex_coords[tex_coord_count].x = atof(strtok(NULL, " "));
 			tex_coords[tex_coord_count].y = -atof(strtok(NULL, " "));
 			tex_coord_count++;
+
 		}
 		else if(strcmp(token, "f") == 0) {
 			int i;
 			for(i = 0;i < 3;i++){
-				VERTICES[VERTEX_COUNT] = vertices[atoi(strtok(NULL, "/")) - 1];
-				TEX_COORDS[VERTEX_COUNT] = tex_coords[atoi(strtok(NULL, "/")) - 1];
-				NORMALS[VERTEX_COUNT] = normals[atoi(strtok(NULL, " ")) - 1];
-				VERTEX_COUNT++;
+				
+				switch (type)
+				{
+				case 1:
+					TABLE_VERTICES[TABLE_VERTEX_COUNT] = vertices[atoi(strtok(NULL, "/")) - 1];
+					TABLE_TEX_COORDS[TABLE_VERTEX_COUNT] = tex_coords[atoi(strtok(NULL, "/")) - 1];
+					TABLE_NORMALS[TABLE_VERTEX_COUNT] = normals[atoi(strtok(NULL, " ")) - 1];
+					TABLE_VERTEX_COUNT++;
+					break;
+				case 2:
+					BED_VERTICES[BED_VERTEX_COUNT] = vertices[atoi(strtok(NULL, "/")) - 1];
+					BED_TEX_COORDS[BED_VERTEX_COUNT] = tex_coords[atoi(strtok(NULL, "/")) - 1];
+					BED_NORMALS[BED_VERTEX_COUNT] = normals[atoi(strtok(NULL, " ")) - 1];
+					BED_VERTEX_COUNT++;
+					break;
+				case 3:
+					PILLOW_VERTICES[PILLOW_VERTEX_COUNT] = vertices[atoi(strtok(NULL, "/")) - 1];
+					PILLOW_TEX_COORDS[PILLOW_VERTEX_COUNT] = tex_coords[atoi(strtok(NULL, "/")) - 1];
+					PILLOW_NORMALS[PILLOW_VERTEX_COUNT] = normals[atoi(strtok(NULL, " ")) - 1];
+					PILLOW_VERTEX_COUNT++;
+					break;
+				case 4:
+					CHAIR_VERTICES[CHAIR_VERTEX_COUNT] = vertices[atoi(strtok(NULL, "/")) - 1];
+					CHAIR_TEX_COORDS[CHAIR_VERTEX_COUNT] = tex_coords[atoi(strtok(NULL, "/")) - 1];
+					CHAIR_NORMALS[CHAIR_VERTEX_COUNT] = normals[atoi(strtok(NULL, " ")) - 1];
+					CHAIR_VERTEX_COUNT++;
+					break;
+				
+				default:
+					break;
+				}
+				
 			}
 		}
 	}
@@ -172,24 +235,24 @@ int load_obj(const char* path) {
 	return 1;
 }
 
-void display2() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+// void display2() {
+// 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	float t = 1.0f * glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+// 	glMatrixMode(GL_MODELVIEW);
+// 	glLoadIdentity();
+// 	gluLookAt(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+// 	float t = 1.0f * glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
 	
-	int i;
-	glBegin(GL_POLYGON);
-	for(i = 0;i < VERTEX_COUNT;i++){
-		glNormal3f(NORMALS[i].x, NORMALS[i].y, NORMALS[i].z);
-		glVertex3f(VERTICES[i].x, VERTICES[i].y, VERTICES[i].z);
-	}
-	glEnd();
+// 	int i;
+// 	glBegin(GL_POLYGON);
+// 	for(i = 0;i < VERTEX_COUNT;i++){
+// 		glNormal3f(NORMALS[i].x, NORMALS[i].y, NORMALS[i].z);
+// 		glVertex3f(VERTICES[i].x, VERTICES[i].y, VERTICES[i].z);
+// 	}
+// 	glEnd();
 
-	glutSwapBuffers();
-}
+// 	glutSwapBuffers();
+// }
 
 void init_gl() {
 	glEnable(GL_DEPTH_TEST);
@@ -214,11 +277,12 @@ void display() {
 	draw_axis(1, 1, 1);
 	draw_walls();
 
+	
 
 	glutSwapBuffers();
 }
 
-static GLfloat vertices[96]={
+static GLfloat vertices[108]={
    /* vértices das paredes e teto */
    10.0,  0.0,   -10.0, /* 0 */
    10.0,  5.0,   -10.0, /* 1 */
@@ -236,22 +300,22 @@ static GLfloat vertices[96]={
   -10.0,  -0.0,   10.0, /* 11 */
 
 	/*vértices da moldura da porta*/
-	8.0, 0.0, -9.99, /* 12 */
-	8.0, 4.0, -9.99, /* 13 */
-	5.0, 4.0, -9.99, /* 14 */
-	5.0, 0.0, -9.99,  /* 15 */
+	8.0, 0.0, -9.999, /* 12 */
+	8.0, 4.0, -9.999, /* 13 */
+	5.0, 4.0, -9.999, /* 14 */
+	5.0, 0.0, -9.999,  /* 15 */
 
 	/*vértices janela*/
-	-9.99, 3.0, 5.0, /* 16 */
-	-9.99, 1.0, 5.0, /* 17 */
-	-9.99, 3.0, 3.0, /* 18 */
-	-9.99, 1.0, 3.0, /* 19 */
+	0, 3.0, 2.0, /* 16 */
+	0, 1.0, 2.0, /* 17 */
+	0, 3.0, 0.0, /* 18 */
+	0, 1.0, 0.0, /* 19 */
 
 	/*vértices da porta que se movimenta*/
-	8.0, 0.0, -9.99, /* 20 */
-	8.0, 4.0, -9.99, /* 21 */
-	5.0, 4.0, -9.99, /* 22 */
-	5.0, 0.0, -9.99,  /* 23 */
+	0, 0.0, 0, /* 20 */
+	0, 4.0, 0, /* 21 */
+	-3.0, 4.0, 0, /* 22 */
+	-3.0, 0.0, 0,  /* 23 */
 
 	/* vertices mesa */
 	7.0, 7.89, -4.5, /* 24 */
@@ -263,12 +327,21 @@ static GLfloat vertices[96]={
 	-7.00000, 7.89000, 4.50000, /* 30 */ 
 	-7.00000, 7.71000, 4.50000,/* 31 */
 
+	/*vértices janela moldura*/
+	-9.999, 3.0, 5.0, /* 32 */
+	-9.999, 1.0, 5.0, /* 33 */
+	-9.999, 3.0, 3.0, /* 34 */
+	-9.999, 1.0, 3.0, /* 35 */
+
 };
 
 static GLubyte trasIndices[] = {1,2,3,0};
 static GLubyte portaIndices[] = {12,13,14,15};
 static GLubyte portaMovIndices[] = {20,21,22,23};
-static GLubyte janelaIndeces[] = {16,17,19,18};
+static GLubyte portaMovTrazIndices[] = {23,22,21,20};
+static GLubyte molduraJanelaIndices[] = {32,33,35,34};
+static GLubyte janelaIndices[] = {16,17,19,18};
+static GLubyte janelaTrazIndices[] = {18,19,17,16};
 static GLubyte leftIndices[] = {4,3,2,5};
 static GLubyte frenteIndices[] = {7,4,5,6};
 static GLubyte rightIndices[] = {7,6,1,0};
@@ -277,7 +350,7 @@ static GLubyte pisoIndices[] = {8,9,11,10};
 
 static GLubyte mesa[] = {31,30,29,28,27,26,25,24};
 
-static int eixoy, eixox;
+static int eixoPortay, eixoJanelay;
 
 void draw_walls() {
     glClear(GL_DEPTH_BUFFER_BIT);    
@@ -287,17 +360,28 @@ void draw_walls() {
 
 
 		glPushMatrix();
-		glRotatef ((GLfloat) eixoy, 0.0, 1.0, 0.0);
-  	glRotatef ((GLfloat) eixox, 1.0, 0.0, 0.0);
-
+		glTranslatef(8.0, 0, -9.998);
+		glRotatef ((GLfloat) eixoPortay, 0.0, 1.0, 0.0);
+		
 		glColor3f(RED);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaMovIndices);
+    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaMovTrazIndices);
+
 		glPopMatrix();
-		
-		
-		
+
+		glPushMatrix();
+		glTranslatef(-9.998, 0, 3.0);
+		glRotatef ((GLfloat) eixoJanelay, 0.0, 1.0, 0.0);
+
+		glColor3f(AMARELO);
+    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaIndices);
+    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaTrazIndices);
+
+		glPopMatrix();
+
+
 		glColor3f(BLACK);
-    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaIndeces);
+    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, molduraJanelaIndices);
 
 		glColor3f(BLACK);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaIndices);
@@ -317,19 +401,20 @@ void draw_walls() {
 		glColor3f(LARANJA);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, tetoIndices);
 
-		glColor3f(CINZA);
-    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);
+		// glColor3f(CINZA);
+    // glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);
 
 		glColor3f(RED);
-		glDrawElements(GL_POLYGON, VERTEX_COUNT, GL_UNSIGNED_BYTE, VERTICES);
-		
+		glDrawElements(GL_POLYGON, TABLE_VERTEX_COUNT, GL_UNSIGNED_BYTE, TABLE_VERTICES);
+
 		int i;
-	glBegin(GL_POLYGON);
-	for(i = 0;i < VERTEX_COUNT;i++){
-		glNormal3f(NORMALS[i].x, NORMALS[i].y, NORMALS[i].z);
-		glVertex3f(VERTICES[i].x, VERTICES[i].y, VERTICES[i].z);
-	}
-	glEnd();
+		glBegin(GL_TRIANGLES);
+		for(i = 0;i < TABLE_VERTEX_COUNT;i++){
+			glNormal3f(TABLE_NORMALS[i].x, TABLE_NORMALS[i].y, TABLE_NORMALS[i].z);
+			glVertex3f(TABLE_VERTICES[i].x*2 + 5.0, TABLE_VERTICES[i].y*2, TABLE_VERTICES[i].z*2 + 9.0);
+		}
+
+		glEnd();
 
 }
 
@@ -381,12 +466,24 @@ void keyboard(unsigned char key, int x, int y){
   case 'a':
     /*printf("%d, %d\n",x,y);*/
     break;
-  case 'y':
-    eixoy = (eixoy + 5) % 360;
+  case 'p':
+    eixoPortay = (eixoPortay + 5) % 360;
+		if(eixoPortay > 180) eixoPortay = 180;
     glutPostRedisplay();
     break;
-  case 'Y':
-    eixoy = (eixoy - 5) % 360;
+  case 'P':
+    eixoPortay = (eixoPortay - 5) % 360;
+		if(eixoPortay < 0) eixoPortay = 0;
+    glutPostRedisplay();
+    break;
+	case 'j':
+    eixoJanelay = (eixoJanelay + 5) % 360;
+		if(eixoJanelay > 180) eixoJanelay = 180;
+    glutPostRedisplay();
+    break;
+  case 'J':
+    eixoJanelay = (eixoJanelay - 5) % 360;
+		if(eixoJanelay < 0) eixoJanelay = 0;
     glutPostRedisplay();
     break;
 	}
@@ -430,6 +527,7 @@ void draw_axis(int x, int y, int z) {
 		glVertex3f(0.0f, 0.0f, 0.0f);
 		glVertex3f(0.0f, 0.0f, ZFAR);
 	}
+	
 	glEnd();
 	glLineWidth(1.0f);
 }
