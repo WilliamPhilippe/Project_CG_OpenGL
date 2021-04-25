@@ -94,6 +94,11 @@ Vec3 PILLOW_VERTICES[MAX_VERTICES];
 Vec3 PILLOW_NORMALS[MAX_VERTICES];
 Vec2 PILLOW_TEX_COORDS[MAX_VERTICES];
 
+int BOOK_VERTEX_COUNT;
+Vec3 BOOK_VERTICES[MAX_VERTICES];
+Vec3 BOOK_NORMALS[MAX_VERTICES];
+Vec2 BOOK_TEX_COORDS[MAX_VERTICES];
+
 void init_gl();
 void display();
 void idle();
@@ -131,6 +136,10 @@ objl::Loader pillowLoader;
 objl::MeshInfo pillow1Mesh;
 objl::MeshInfo pillow2Mesh;
 
+objl::Loader bookLoader;
+objl::MeshInfo book1Mesh;
+objl::MeshInfo book2Mesh;
+
 void init_gl() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -149,6 +158,9 @@ void init_gl() {
 
 	pillow1Mesh = pillowLoader.LoadedMeshes[1].setup();
 	pillow2Mesh = pillowLoader.LoadedMeshes[0].setup();
+
+	book1Mesh = bookLoader.LoadedMeshes[0].setup();
+	book2Mesh = bookLoader.LoadedMeshes[1].setup();
 }
 
 void display() {
@@ -318,6 +330,33 @@ void draw_walls() {
             glVertexPointer(3, GL_FLOAT, 0, &tableSeatMesh.vertices_pointers[0]);
             glNormalPointer(GL_FLOAT, 0, &tableSeatMesh.vertices_normals[0]);
             glDrawElements(GL_TRIANGLES, tableSeatMesh.indices_pointers.size(), GL_UNSIGNED_INT, &tableSeatMesh.indices_pointers[0]);
+        glPopMatrix();
+    glPopMatrix();
+
+	glPushMatrix();
+			book1Mesh.material.active();
+			book1Mesh.material.dye();
+      glScalef(0.02, 0.02, 0.02);
+      glTranslatef(420, 80, 0);
+			glRotatef ((GLfloat) 90, 0.0, 1.0, 0.0);
+
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+			glColor3f(RED);
+
+			glVertexPointer(3, GL_FLOAT, 0, &book1Mesh.vertices_pointers[0]);
+      glNormalPointer(GL_FLOAT, 0, &book1Mesh.vertices_normals[0]);
+      glDrawElements(GL_TRIANGLES, book1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &book1Mesh.indices_pointers[0]);
+
+			glPushMatrix();
+            book2Mesh.material.active();
+            book2Mesh.material.dye();
+						glColor3f(MESA);
+
+            glVertexPointer(3, GL_FLOAT, 0, &book2Mesh.vertices_pointers[0]);
+            glNormalPointer(GL_FLOAT, 0, &book2Mesh.vertices_normals[0]);
+            glDrawElements(GL_TRIANGLES, book2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &book2Mesh.indices_pointers[0]);
         glPopMatrix();
     glPopMatrix();
 
@@ -580,7 +619,7 @@ int main(int argc, char** argv) {
 
 	glutInitWindowSize(WINDOW_SIZE.x, WINDOW_SIZE.y);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutCreateWindow("Hue");
+	glutCreateWindow("Room");
 	glutWarpPointer(WINDOW_CENTER.x, WINDOW_CENTER.y);	
 
 	glutDisplayFunc(display);
@@ -594,6 +633,7 @@ int main(int argc, char** argv) {
 	bedLoader.LoadFile("./obj/bed/bed.obj");
 	chairLoader.LoadFile("./obj/chair/chair.obj");
 	pillowLoader.LoadFile("./obj/pillow/pillow.obj");
+	bookLoader.LoadFile("./obj/book/book.obj");
 
 
 	init_gl();
