@@ -289,22 +289,22 @@ void draw_walls() {
 
 
 		glPushMatrix();
-		glTranslatef(8.0, 0, -9.998);
-		glRotatef ((GLfloat) eixoPortay, 0.0, 1.0, 0.0);
+			glTranslatef(8.0, 0, -9.998);
+			glRotatef ((GLfloat) eixoPortay, 0.0, 1.0, 0.0);
 		
-		glColor3f(JANELA);
-    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaMovIndices);
-    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaMovTrazIndices);
+			glColor3f(JANELA);
+  	  glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaMovIndices);
+    	glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaMovTrazIndices);
 
 		glPopMatrix();
 
 		glPushMatrix();
-		glTranslatef(-9.998, 0, 3.0);
-		glRotatef ((GLfloat) eixoJanelay, 0.0, 1.0, 0.0);
+			glTranslatef(-9.998, 0, 3.0);
+			glRotatef ((GLfloat) eixoJanelay, 0.0, 1.0, 0.0);
 
-		glColor3f(JANELA);
-    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaIndices);
-    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaTrazIndices);
+			glColor3f(JANELA);
+    	glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaIndices);
+    	glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaTrazIndices);
 
 		glPopMatrix();
 
