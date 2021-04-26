@@ -357,14 +357,9 @@ static GLubyte mesa[] = {31,30,29,28,27,26,25,24};
 
 static int eixoPortay, eixoJanelay, eixoVentiladorX = 0, velocidadeFan = 0;
 
-void draw_walls() {
-    glClear(GL_DEPTH_BUFFER_BIT);    
-    
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, 0, vertices);
-
-
-		glPushMatrix();
+void buildDoor() {
+	
+	glPushMatrix();
 			glTranslatef(8.0, 0, -9.998);
 			glRotatef ((GLfloat) eixoPortay, 0.0, 1.0, 0.0);
 		
@@ -372,9 +367,11 @@ void draw_walls() {
   	  glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaMovIndices);
     	glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaMovTrazIndices);
 
-		glPopMatrix();
+	glPopMatrix();
+}
 
-		glPushMatrix();
+void buildWindow() {
+	glPushMatrix();
 			glTranslatef(-9.998, 0, 3.0);
 			glRotatef ((GLfloat) eixoJanelay, 0.0, 1.0, 0.0);
 
@@ -382,9 +379,10 @@ void draw_walls() {
     	glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaIndices);
     	glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaTrazIndices);
 
-		glPopMatrix();
+	glPopMatrix();
+}
 
-
+void buildRoom() {
 		glColor3f(BLACK);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, molduraJanelaIndices);
 
@@ -408,9 +406,10 @@ void draw_walls() {
 
 		glColor3f(CINZA);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);
+}
 
-
-		glPushMatrix();
+void buildTable() {
+	glPushMatrix();
 			tableMesh.material.active();
 			tableMesh.material.dye();
 			glRotatef ((GLfloat) 90, 0.0, 1.0, 0.0);
@@ -492,32 +491,6 @@ void draw_walls() {
     glPopMatrix();
 
 		glPushMatrix();
-			bed1Mesh.material.active();
-			bed1Mesh.material.dye();
-      glScalef(0.05, 0.05, 0.05);
-      glTranslatef(-160, 0,200);
-
-
-			glEnableClientState(GL_VERTEX_ARRAY);
-      glEnableClientState(GL_NORMAL_ARRAY);
-			glColor3f(MESA);
-
-			glVertexPointer(3, GL_FLOAT, 0, &bed1Mesh.vertices_pointers[0]);
-      glNormalPointer(GL_FLOAT, 0, &bed1Mesh.vertices_normals[0]);
-      glDrawElements(GL_TRIANGLES, bed1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &bed1Mesh.indices_pointers[0]);
-
-			glPushMatrix();
-            bed2Mesh.material.active();
-            bed2Mesh.material.dye();
-						glColor3f(MESA);
-
-            glVertexPointer(3, GL_FLOAT, 0, &bed2Mesh.vertices_pointers[0]);
-            glNormalPointer(GL_FLOAT, 0, &bed2Mesh.vertices_normals[0]);
-            glDrawElements(GL_TRIANGLES, bed2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &bed2Mesh.indices_pointers[0]);
-        glPopMatrix();
-    glPopMatrix();
-
-		glPushMatrix();
 			chair1Mesh.material.active();
 			chair1Mesh.material.dye();
 			glRotatef ((GLfloat) -90, 0.0, 1.0, 0.0);
@@ -556,6 +529,37 @@ void draw_walls() {
 			glPopMatrix();
     glPopMatrix();
 
+}
+
+void buildBed() {
+
+		glPushMatrix();
+			bed1Mesh.material.active();
+			bed1Mesh.material.dye();
+      glScalef(0.05, 0.05, 0.05);
+      glTranslatef(-160, 0,200);
+
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+			glColor3f(MESA);
+
+			glVertexPointer(3, GL_FLOAT, 0, &bed1Mesh.vertices_pointers[0]);
+      glNormalPointer(GL_FLOAT, 0, &bed1Mesh.vertices_normals[0]);
+      glDrawElements(GL_TRIANGLES, bed1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &bed1Mesh.indices_pointers[0]);
+
+			glPushMatrix();
+            bed2Mesh.material.active();
+            bed2Mesh.material.dye();
+						glColor3f(MESA);
+
+            glVertexPointer(3, GL_FLOAT, 0, &bed2Mesh.vertices_pointers[0]);
+            glNormalPointer(GL_FLOAT, 0, &bed2Mesh.vertices_normals[0]);
+            glDrawElements(GL_TRIANGLES, bed2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &bed2Mesh.indices_pointers[0]);
+        glPopMatrix();
+    glPopMatrix();
+
+		
 		glPushMatrix();
 			pillow1Mesh.material.active();
 			pillow1Mesh.material.dye();
@@ -572,8 +576,10 @@ void draw_walls() {
       glNormalPointer(GL_FLOAT, 0, &pillow1Mesh.vertices_normals[0]);
       glDrawElements(GL_TRIANGLES, pillow1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &pillow1Mesh.indices_pointers[0]);
     glPopMatrix();
+}
 
-		glPushMatrix();
+void buildShelf() {
+glPushMatrix();
 			shelf1Mesh.material.active();
 			shelf1Mesh.material.dye();
 			// glRotatef ((GLfloat) 90, 1.0, 0, 0.0);
@@ -679,7 +685,10 @@ void draw_walls() {
 			glPopMatrix();
     glPopMatrix();
 
-		glPushMatrix();
+}
+
+void buildCarpet() {
+	glPushMatrix();
 			carpet1Mesh.material.active();
 			carpet1Mesh.material.dye();
 			glTranslatef(0,0.01, 0);
@@ -694,13 +703,32 @@ void draw_walls() {
       glDrawElements(GL_TRIANGLES, carpet1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &carpet1Mesh.indices_pointers[0]);
 
     glPopMatrix();
+}
 
+void buildBoardVanGogh(){
 		glPushMatrix();
 			glRotatef ((GLfloat) -90, 0, 1.0, 0.0);
 			glTranslatef(-6,1.7,-10);
 
-			buildBoard(&vanGoghPaiting, rgb(155, 125, 155), {5,3,0.1});
+			buildBoardTexture(&vanGoghPaiting, rgb(155, 125, 155), {5,3,0.1});
 		glPopMatrix();
+}
+
+void draw_walls() {
+    glClear(GL_DEPTH_BUFFER_BIT);    
+    
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, vertices);
+
+
+		buildDoor();
+		buildWindow();
+		buildRoom();
+		buildTable();
+		buildBed();
+		buildShelf();
+		buildCarpet();
+		buildBoardVanGogh();		
 }
 
 void idle() {

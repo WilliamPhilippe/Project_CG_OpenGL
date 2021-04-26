@@ -173,72 +173,6 @@ void buildDoorFrame(Texture* texture)
     glDisable(GL_TEXTURE_2D);
 }
 
-void buildBoard(Texture* texture, glm::vec3 color, glm::vec3 dimentions)
-{
-    GLfloat width = dimentions.x;
-    GLfloat height = dimentions.y;
-    GLfloat depth = dimentions.z;
-
-    glEnable(GL_TEXTURE_2D);
-
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-    glBindTexture(GL_TEXTURE_2D, texture->id);
-
-    glColor3fv(glm::value_ptr(color));
-    glPushMatrix();
-
-        glBegin(GL_QUADS);
-
-            // Front Face
-            glNormal3fv(getNormal({ width, 0, 0 }, { 0, height, 0 }));
-            glTexCoord2f(1.0, 1.0); glVertex3f(0.0, 0.0, 0.0);
-            glTexCoord2f(0.0, 1.0); glVertex3f(width, 0.0, 0.0);
-            glTexCoord2f(0.0, 0.0); glVertex3f(width, height, 0.0);
-            glTexCoord2f(1.0, 0.0); glVertex3f(0.0, height, 0.0);
-            // Back Face
-            glNormal3fv(getNormal({ width, 0, depth }, { 0, height, depth }));
-            glTexCoord2f(1.0, 1.0); glVertex3f(0.0, 0.0, depth);
-            glTexCoord2f(0.0, 1.0); glVertex3f(width, 0.0, depth);
-            glTexCoord2f(0.0, 0.0); glVertex3f(width, height, depth);
-            glTexCoord2f(1.0, 0.0); glVertex3f(0.0, height, depth);
-
-        glEnd();
-        
-        glDisable(GL_TEXTURE_2D);
-
-        glBegin(GL_QUADS);
-            // Left Face
-            glNormal3fv(getNormal({ 0, height, 0 }, { 0, 0, depth }));
-            glTexCoord2f(0.0, 0.0); glVertex3f(0.0, 0.0, 0.0);
-            glTexCoord2f(0.0, 1.0); glVertex3f(0.0, height, 0.0);
-            glTexCoord2f(1.0, 1.0); glVertex3f(0.0, height, depth);
-            glTexCoord2f(1.0, 0.0); glVertex3f(0.0, 0.0, depth);
-            // Right Face
-            glNormal3fv(getNormal({ 0, height, 0 }, { 0, 0, depth }));
-            glTexCoord2f(0.0, 0.0); glVertex3f(width, 0.0, 0.0);
-            glTexCoord2f(0.0, 1.0); glVertex3f(width, height, 0.0);
-            glTexCoord2f(1.0, 1.0); glVertex3f(width, height, depth);
-            glTexCoord2f(1.0, 0.0); glVertex3f(width, 0.0, depth);
-            // Bottom Face
-            glNormal3fv(getNormal({ width, 0, 0 }, { 0, 0, depth }));
-            glTexCoord2f(0.0, 0.0); glVertex3f(0.0, 0.0, 0.0);
-            glTexCoord2f(0.0, 1.0); glVertex3f(width, 0.0, 0.0);
-            glTexCoord2f(1.0, 1.0); glVertex3f(width, 0.0, depth);
-            glTexCoord2f(1.0, 0.0); glVertex3f(0.0, 0.0, depth);
-            // Top Face
-            glNormal3fv(getNormal({ width, 0, 0 }, { 0, 0, depth }));
-            glTexCoord2f(0.0, 0.0); glVertex3f(0.0, height, 0.0);
-            glTexCoord2f(0.0, 1.0); glVertex3f(width, height, 0.0);
-            glTexCoord2f(1.0, 1.0); glVertex3f(width, height, depth);
-            glTexCoord2f(1.0, 0.0); glVertex3f(0.0, height, depth);
-        glEnd();
-
-    glPopMatrix();
-
-    glFlush();
-    glDisable(GL_TEXTURE_2D);
-}
-
 void buildDoor(Texture* texture, GLfloat angle)
 {
     GLfloat width = 4.2;
@@ -545,6 +479,72 @@ void buildWindowGlass()
         glDisable( GL_BLEND );
 
     glPopMatrix();
+}
+
+void buildBoardTexture(Texture* texture, glm::vec3 color, glm::vec3 dimentions)
+{
+    GLfloat width = dimentions.x;
+    GLfloat height = dimentions.y;
+    GLfloat depth = dimentions.z;
+
+    glEnable(GL_TEXTURE_2D);
+
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    glBindTexture(GL_TEXTURE_2D, texture->id);
+
+    glColor3fv(glm::value_ptr(color));
+    glPushMatrix();
+
+        glBegin(GL_QUADS);
+
+            // Front Face
+            glNormal3fv(getNormal({ width, 0, 0 }, { 0, height, 0 }));
+            glTexCoord2f(1.0, 1.0); glVertex3f(0.0, 0.0, 0.0);
+            glTexCoord2f(0.0, 1.0); glVertex3f(width, 0.0, 0.0);
+            glTexCoord2f(0.0, 0.0); glVertex3f(width, height, 0.0);
+            glTexCoord2f(1.0, 0.0); glVertex3f(0.0, height, 0.0);
+            // Back Face
+            glNormal3fv(getNormal({ width, 0, depth }, { 0, height, depth }));
+            glTexCoord2f(1.0, 1.0); glVertex3f(0.0, 0.0, depth);
+            glTexCoord2f(0.0, 1.0); glVertex3f(width, 0.0, depth);
+            glTexCoord2f(0.0, 0.0); glVertex3f(width, height, depth);
+            glTexCoord2f(1.0, 0.0); glVertex3f(0.0, height, depth);
+
+        glEnd();
+        
+        glDisable(GL_TEXTURE_2D);
+
+        // glBegin(GL_QUADS);
+        //     // Left Face
+        //     glNormal3fv(getNormal({ 0, height, 0 }, { 0, 0, depth }));
+        //     glTexCoord2f(0.0, 0.0); glVertex3f(0.0, 0.0, 0.0);
+        //     glTexCoord2f(0.0, 1.0); glVertex3f(0.0, height, 0.0);
+        //     glTexCoord2f(1.0, 1.0); glVertex3f(0.0, height, depth);
+        //     glTexCoord2f(1.0, 0.0); glVertex3f(0.0, 0.0, depth);
+        //     // Right Face
+        //     glNormal3fv(getNormal({ 0, height, 0 }, { 0, 0, depth }));
+        //     glTexCoord2f(0.0, 0.0); glVertex3f(width, 0.0, 0.0);
+        //     glTexCoord2f(0.0, 1.0); glVertex3f(width, height, 0.0);
+        //     glTexCoord2f(1.0, 1.0); glVertex3f(width, height, depth);
+        //     glTexCoord2f(1.0, 0.0); glVertex3f(width, 0.0, depth);
+        //     // Bottom Face
+        //     glNormal3fv(getNormal({ width, 0, 0 }, { 0, 0, depth }));
+        //     glTexCoord2f(0.0, 0.0); glVertex3f(0.0, 0.0, 0.0);
+        //     glTexCoord2f(0.0, 1.0); glVertex3f(width, 0.0, 0.0);
+        //     glTexCoord2f(1.0, 1.0); glVertex3f(width, 0.0, depth);
+        //     glTexCoord2f(1.0, 0.0); glVertex3f(0.0, 0.0, depth);
+        //     // Top Face
+        //     glNormal3fv(getNormal({ width, 0, 0 }, { 0, 0, depth }));
+        //     glTexCoord2f(0.0, 0.0); glVertex3f(0.0, height, 0.0);
+        //     glTexCoord2f(0.0, 1.0); glVertex3f(width, height, 0.0);
+        //     glTexCoord2f(1.0, 1.0); glVertex3f(width, height, depth);
+        //     glTexCoord2f(1.0, 0.0); glVertex3f(0.0, height, depth);
+        // glEnd();
+
+    glPopMatrix();
+
+    glFlush();
+    glDisable(GL_TEXTURE_2D);
 }
 
 void buildWindow(mat::Material chrome)
