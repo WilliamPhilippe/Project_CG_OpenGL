@@ -158,6 +158,13 @@ objl::MeshInfo shelf3Mesh;
 objl::Loader carpetLoader;
 objl::MeshInfo carpet1Mesh;
 
+objl::Loader fanLoader;
+objl::MeshInfo fan1Mesh;
+objl::MeshInfo fan2Mesh;
+objl::MeshInfo fan3Mesh;
+objl::MeshInfo fan4Mesh;
+objl::MeshInfo fan5Mesh;
+
 
 void init_gl() {
 	glEnable(GL_DEPTH_TEST);
@@ -189,6 +196,12 @@ void init_gl() {
 	shelf3Mesh = shelfLoader.LoadedMeshes[2].setup();
 
 	carpet1Mesh = carpetLoader.LoadedMeshes[0].setup();
+
+	fan1Mesh = fanLoader.LoadedMeshes[0].setup();
+	fan2Mesh = fanLoader.LoadedMeshes[1].setup();
+	fan3Mesh = fanLoader.LoadedMeshes[2].setup();
+	fan4Mesh = fanLoader.LoadedMeshes[3].setup();
+	fan5Mesh = fanLoader.LoadedMeshes[4].setup();
 }
 
 void display() {
@@ -537,6 +550,66 @@ void draw_walls() {
 			glPopMatrix();
     glPopMatrix();
 
+	glPushMatrix();
+			fan1Mesh.material.active();
+			fan1Mesh.material.dye();
+			glScalef(0.032, 0.032, 0.032);
+			glTranslatef(-295, 57, 185);
+
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+			glColor3f(AZUL);
+
+			glVertexPointer(3, GL_FLOAT, 0, &fan1Mesh.vertices_pointers[0]);
+      glNormalPointer(GL_FLOAT, 0, &fan1Mesh.vertices_normals[0]);
+      glDrawElements(GL_TRIANGLES, fan1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &fan1Mesh.indices_pointers[0]);
+
+			glPushMatrix();
+							fan2Mesh.material.active();
+							fan2Mesh.material.dye();
+							glColor3f(JANELA);
+
+							glVertexPointer(3, GL_FLOAT, 0, &fan2Mesh.vertices_pointers[0]);
+							glNormalPointer(GL_FLOAT, 0, &fan2Mesh.vertices_normals[0]);
+							glDrawElements(GL_TRIANGLES, fan2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &fan2Mesh.indices_pointers[0]);
+
+			glPopMatrix();
+
+			glPushMatrix();
+							fan3Mesh.material.active();
+							fan3Mesh.material.dye();
+							glColor3f(AZUL);
+
+							glVertexPointer(3, GL_FLOAT, 0, &fan3Mesh.vertices_pointers[0]);
+							glNormalPointer(GL_FLOAT, 0, &fan3Mesh.vertices_normals[0]);
+							glDrawElements(GL_TRIANGLES, fan3Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &fan3Mesh.indices_pointers[0]);
+
+			glPopMatrix();
+
+			glPushMatrix();
+							fan4Mesh.material.active();
+							fan4Mesh.material.dye();
+							glColor3f(JANELA);
+
+							glVertexPointer(3, GL_FLOAT, 0, &fan4Mesh.vertices_pointers[0]);
+							glNormalPointer(GL_FLOAT, 0, &fan4Mesh.vertices_normals[0]);
+							glDrawElements(GL_TRIANGLES, fan4Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &fan4Mesh.indices_pointers[0]);
+
+			glPopMatrix();
+
+			glPushMatrix();
+							fan5Mesh.material.active();
+							fan5Mesh.material.dye();
+							glColor3f(RED);
+
+							glVertexPointer(3, GL_FLOAT, 0, &fan5Mesh.vertices_pointers[0]);
+							glNormalPointer(GL_FLOAT, 0, &fan5Mesh.vertices_normals[0]);
+							glDrawElements(GL_TRIANGLES, fan5Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &fan5Mesh.indices_pointers[0]);
+
+			glPopMatrix();
+    glPopMatrix();
+
 		glPushMatrix();
 			carpet1Mesh.material.active();
 			carpet1Mesh.material.dye();
@@ -748,6 +821,7 @@ int main(int argc, char** argv) {
 	cupLoader.LoadFile("./obj/glass/glass.obj");
 	shelfLoader.LoadFile("./obj/shelf/shelf.obj");
 	carpetLoader.LoadFile("./obj/carpet/carpet.obj");
+	fanLoader.LoadFile("./obj/fan/fan.obj");
 
 
 
