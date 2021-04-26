@@ -15,6 +15,15 @@
 
 using std::cout;
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "./libs/stb_image.h"
+#include "./libs/camera.h"
+#include "./libs/build.h"
+#include "./libs/texture.h"
+#include "./libs/animation.h"
+#include "./libs/solids.h"
+#include "./libs/material.h"
+
 #include "./libs/obj_loader.h"
 
 #define BLACK 0.0f, 0.0f, 0.0f
@@ -158,11 +167,61 @@ objl::MeshInfo shelf3Mesh;
 objl::Loader carpetLoader;
 objl::MeshInfo carpet1Mesh;
 
+// TEXTURES
+
+Texture vanGoghPaiting;
+
+void loadTexture(const char* fileName, Texture* texture) 
+{
+    // Generate Texture
+    glBindTexture(GL_TEXTURE_2D, texture->id);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load and generate the texture
+    int nrChannels;
+
+    texture->data = stbi_load(fileName, &texture->width, &texture->height, &nrChannels, 0);
+
+    if (!texture->data) {
+        cout << "Failed to load texture: " << fileName << "\n";
+        exit(1);
+    } 
+
+}
+
+void setupTexture(Texture* texture)
+{
+    glPixelStoref(GL_UNPACK_ALIGNMENT, 1);
+
+    glGenTextures(1, &texture->id);
+    glBindTexture(GL_TEXTURE_2D, texture->id);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, 
+                    GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
+                    GL_NEAREST);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, 
+                    texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
+                    texture->data);                  
+}
+
+void setTextures() {
+	loadTexture("./imgs/textures/paiting-van-gogh.png", &vanGoghPaiting);
+	setupTexture(&vanGoghPaiting);
+}
 
 void init_gl() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+
+	setTextures();
 
 	tableMesh = tableLoader.LoadedMeshes[0].setup();
 	tableSeatMesh = tableLoader.LoadedMeshes[1].setup();
@@ -552,6 +611,13 @@ void draw_walls() {
       glDrawElements(GL_TRIANGLES, carpet1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &carpet1Mesh.indices_pointers[0]);
 
     glPopMatrix();
+
+		glPushMatrix();
+			glRotatef ((GLfloat) -90, 0, 1.0, 0.0);
+			glTranslatef(-6,1.7,-10);
+
+			buildBoard(&vanGoghPaiting, rgb(155, 125, 155), {5,3,0.1});
+		glPopMatrix();
 }
 
 void idle() {
