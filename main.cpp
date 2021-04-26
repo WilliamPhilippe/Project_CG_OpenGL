@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 
+
 #include <math.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -25,6 +26,9 @@ using std::cout;
 #include "./libs/material.h"
 
 #include "./libs/obj_loader.h"
+
+#include<unistd.h>
+
 
 #define BLACK 0.0f, 0.0f, 0.0f
 #define RED 1.0f, 0.0f, 0.0f
@@ -72,7 +76,7 @@ typedef struct Transform Transform;
 const float DEG2RAD = M_PI / 180.0f;
 const float RAD2DEG = 180.0f / M_PI;
 
-Vec2 WINDOW_SIZE = {640, 480};
+Vec2 WINDOW_SIZE = {1040, 720};
 Vec2 WINDOW_CENTER = {320, 240};
 float FOVY = 75.0f;
 float ZNEAR = 10e-3;
@@ -166,6 +170,13 @@ objl::MeshInfo shelf3Mesh;
 
 objl::Loader carpetLoader;
 objl::MeshInfo carpet1Mesh;
+
+objl::Loader fanLoader;
+objl::MeshInfo fan1Mesh;
+objl::MeshInfo fan2Mesh;
+objl::MeshInfo fan3Mesh;
+objl::MeshInfo fan4Mesh;
+objl::MeshInfo fan5Mesh;
 
 // TEXTURES
 
@@ -344,7 +355,7 @@ static GLubyte pisoIndices[] = {8,9,11,10};
 
 static GLubyte mesa[] = {31,30,29,28,27,26,25,24};
 
-static int eixoPortay, eixoJanelay;
+static int eixoPortay, eixoJanelay, eixoVentiladorX = 0, velocidadeFan = 0;
 
 void draw_walls() {
     glClear(GL_DEPTH_BUFFER_BIT);    
@@ -603,19 +614,25 @@ void draw_walls() {
     glPopMatrix();
 
 	glPushMatrix();
-			fan1Mesh.material.active();
-			fan1Mesh.material.dye();
 			glScalef(0.032, 0.032, 0.032);
 			glTranslatef(-295, 57, 185);
 
 
+
+		glPushMatrix();
+			fan1Mesh.material.active();
+			fan1Mesh.material.dye();
+			eixoVentiladorX = (eixoVentiladorX + velocidadeFan) % 360;
+			glRotatef ((GLfloat) eixoVentiladorX, 1.0, 0, 0.0);
+
 			glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_NORMAL_ARRAY);
-			glColor3f(AZUL);
+			glColor3f(LIGHTBLUE);
 
 			glVertexPointer(3, GL_FLOAT, 0, &fan1Mesh.vertices_pointers[0]);
       glNormalPointer(GL_FLOAT, 0, &fan1Mesh.vertices_normals[0]);
       glDrawElements(GL_TRIANGLES, fan1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &fan1Mesh.indices_pointers[0]);
+			glPopMatrix();
 
 			glPushMatrix();
 							fan2Mesh.material.active();
@@ -754,6 +771,16 @@ void keyboard(unsigned char key, int x, int y){
 		if(eixoJanelay < 0) eixoJanelay = 0;
     glutPostRedisplay();
     break;
+	case 'f':
+    velocidadeFan = velocidadeFan + 3;
+		if(velocidadeFan > 12) velocidadeFan = 12;
+    glutPostRedisplay();
+    break;
+	case 'F':
+    velocidadeFan = velocidadeFan - 3;
+		if(velocidadeFan < -12) velocidadeFan = -12;
+    glutPostRedisplay();
+    break;
 	}
 
 	KEYBOARD[tolower(key)] = 1;
@@ -881,6 +908,8 @@ int main(int argc, char** argv) {
 	shelfLoader.LoadFile("./obj/shelf/shelf.obj");
 	carpetLoader.LoadFile("./obj/carpet/carpet.obj");
 	fanLoader.LoadFile("./obj/fan/fan.obj");
+
+	unsigned int microsecond = 1000000;
 
 
 
