@@ -34,6 +34,7 @@ using std::cout;
 #define PAREDE2    0.57, 0.61, 0.62
 #define JANELA    0.407, 0.282, 0.098
 #define MESA    0.77, 0.81, 0.92
+#define LIGHTBLUE 0.678, 0.847, 0.902
 
 
 
@@ -149,6 +150,15 @@ objl::Loader cupLoader;
 objl::MeshInfo cup1Mesh;
 objl::MeshInfo cup2Mesh;
 
+objl::Loader shelfLoader;
+objl::MeshInfo shelf1Mesh;
+objl::MeshInfo shelf2Mesh;
+objl::MeshInfo shelf3Mesh;
+
+objl::Loader carpetLoader;
+objl::MeshInfo carpet1Mesh;
+
+
 void init_gl() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -173,6 +183,12 @@ void init_gl() {
 
 	cup1Mesh = cupLoader.LoadedMeshes[0].setup();
 	cup2Mesh = cupLoader.LoadedMeshes[1].setup();
+
+	shelf1Mesh = shelfLoader.LoadedMeshes[0].setup();
+	shelf2Mesh = shelfLoader.LoadedMeshes[1].setup();
+	shelf3Mesh = shelfLoader.LoadedMeshes[2].setup();
+
+	carpet1Mesh = carpetLoader.LoadedMeshes[0].setup();
 }
 
 void display() {
@@ -388,15 +404,15 @@ void draw_walls() {
       glNormalPointer(GL_FLOAT, 0, &cup1Mesh.vertices_normals[0]);
       glDrawElements(GL_TRIANGLES, cup1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &cup1Mesh.indices_pointers[0]);
 
-		// 	glPushMatrix();
-        //     cup2Mesh.material.active();
-        //     cup2Mesh.material.dye();
-		// 				glColor3f(WHITE);
+			glPushMatrix();
+            cup2Mesh.material.active();
+            cup2Mesh.material.dye();
+						glColor3f(AZUL);
 
-        //     glVertexPointer(3, GL_FLOAT, 0, &cup2Mesh.vertices_pointers[0]);
-        //     glNormalPointer(GL_FLOAT, 0, &cup2Mesh.vertices_normals[0]);
-        //     glDrawElements(GL_TRIANGLES, cup2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &book2Mesh.indices_pointers[0]);
-        // glPopMatrix();
+            glVertexPointer(3, GL_FLOAT, 0, &cup2Mesh.vertices_pointers[0]);
+            glNormalPointer(GL_FLOAT, 0, &cup2Mesh.vertices_normals[0]);
+            glDrawElements(GL_TRIANGLES, cup2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &cup2Mesh.indices_pointers[0]);
+        glPopMatrix();
     glPopMatrix();
 
 		glPushMatrix();
@@ -479,6 +495,62 @@ void draw_walls() {
 			glVertexPointer(3, GL_FLOAT, 0, &pillow1Mesh.vertices_pointers[0]);
       glNormalPointer(GL_FLOAT, 0, &pillow1Mesh.vertices_normals[0]);
       glDrawElements(GL_TRIANGLES, pillow1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &pillow1Mesh.indices_pointers[0]);
+    glPopMatrix();
+
+		glPushMatrix();
+			shelf1Mesh.material.active();
+			shelf1Mesh.material.dye();
+			// glRotatef ((GLfloat) 90, 1.0, 0, 0.0);
+      glScalef(2, 1.6, 2);
+      glTranslatef(-4.7, 0, 3);
+      glTranslatef(0, 0.5,0);
+
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+			glColor3f(AZUL);
+
+			glVertexPointer(3, GL_FLOAT, 0, &shelf1Mesh.vertices_pointers[0]);
+      glNormalPointer(GL_FLOAT, 0, &shelf1Mesh.vertices_normals[0]);
+      glDrawElements(GL_TRIANGLES, shelf1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &shelf1Mesh.indices_pointers[0]);
+
+			glPushMatrix();
+							shelf2Mesh.material.active();
+							shelf2Mesh.material.dye();
+							glColor3f(JANELA);
+
+							glVertexPointer(3, GL_FLOAT, 0, &shelf2Mesh.vertices_pointers[0]);
+							glNormalPointer(GL_FLOAT, 0, &shelf2Mesh.vertices_normals[0]);
+							glDrawElements(GL_TRIANGLES, shelf2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &shelf2Mesh.indices_pointers[0]);
+
+			glPopMatrix();
+
+			glPushMatrix();
+							shelf3Mesh.material.active();
+							shelf3Mesh.material.dye();
+							glColor3f(AZUL);
+
+							glVertexPointer(3, GL_FLOAT, 0, &shelf3Mesh.vertices_pointers[0]);
+							glNormalPointer(GL_FLOAT, 0, &shelf3Mesh.vertices_normals[0]);
+							glDrawElements(GL_TRIANGLES, shelf3Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &shelf3Mesh.indices_pointers[0]);
+
+			glPopMatrix();
+    glPopMatrix();
+
+		glPushMatrix();
+			carpet1Mesh.material.active();
+			carpet1Mesh.material.dye();
+			glTranslatef(0,0.01, 0);
+
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+			glColor3f(LIGHTBLUE);
+
+			glVertexPointer(3, GL_FLOAT, 0, &carpet1Mesh.vertices_pointers[0]);
+      glNormalPointer(GL_FLOAT, 0, &carpet1Mesh.vertices_normals[0]);
+      glDrawElements(GL_TRIANGLES, carpet1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &carpet1Mesh.indices_pointers[0]);
+
     glPopMatrix();
 }
 
@@ -674,6 +746,9 @@ int main(int argc, char** argv) {
 	pillowLoader.LoadFile("./obj/pillow/pillow.obj");
 	bookLoader.LoadFile("./obj/book/book.obj");
 	cupLoader.LoadFile("./obj/glass/glass.obj");
+	shelfLoader.LoadFile("./obj/shelf/shelf.obj");
+	carpetLoader.LoadFile("./obj/carpet/carpet.obj");
+
 
 
 	init_gl();
