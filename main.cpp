@@ -761,8 +761,8 @@ void motion(int x, int y) {
         delta.x = x - WINDOW_CENTER.x;
         delta.y = y - WINDOW_CENTER.y;
 
-		CAM.rotation.x += delta.y > 0 ? 1.0f : (delta.y < 0 ? -1.0f : 0.0f);
-		CAM.rotation.y -= delta.x > 0 ? 1.0f : (delta.x < 0 ? -1.0f : 0.0f);
+		CAM.rotation.x += delta.y > 0 ? 2.0f : (delta.y < 0 ? -2.0f : 0.0f);
+		CAM.rotation.y -= delta.x > 0 ? 2.0f : (delta.x < 0 ? -2.0f : 0.0f);
 
         wrap = 1;
         glutWarpPointer(WINDOW_CENTER.x, WINDOW_CENTER.y);
@@ -944,7 +944,7 @@ int main(int argc, char** argv) {
 	init_gl();
 
 	CAM.position = (Vec3) {0.0f, 2.0f, 0.0f};
-	CAM.rotation = (Vec3) {-90.0f, 0.0f, 0.0f};
+	CAM.rotation = (Vec3) {0.0f, 0.0f, 0.0f};
 
 	glutMainLoop();
 
