@@ -36,12 +36,9 @@ using std::cout;
 #define BLUE 0.0f, 0.0f, 1.0f
 #define WHITE 1.0f, 1.0f, 1.0f
 #define AZUL     0.0, 0.0, 1.0
-#define VERMELHO 1.0, 0.0, 0.0
 #define AMARELO  1.0, 1.0, 0.0
-#define VERDE    0.0, 1.0, 0.0
 #define CYAN     1.0, 0.0, 1.0
 #define LARANJA  0.8, 0.6, 0.1
-#define ROSEO    0.7, 0.1, 0.6
 #define CINZA    0.6, 0.6, 0.6
 #define PAREDE    0.87, 0.91, 0.92
 #define PAREDE2    0.57, 0.61, 0.62
@@ -49,12 +46,6 @@ using std::cout;
 #define MESA    0.77, 0.81, 0.92
 #define LIGHTBLUE 0.678, 0.847, 0.902
 
-
-
-#define ORIGIN 0.0f, 0.0f, 0.0f
-#define RIGHT 1.0f, 0.0f, 0.0f
-#define UP 0.0f, 1.0f, 0.0f
-#define FORWARD 0.0f, 0.0f, -1.0f
 
 struct Vec2 {
 	float x, y;
@@ -85,39 +76,6 @@ Transform CAM;
 int KEYBOARD[128] = {0};
 Vec2 MOTION;
 
-char ch='1';
-
-#define MAX_VERTICES 5000
-int TABLE_VERTEX_COUNT;
-Vec3 TABLE_VERTICES[MAX_VERTICES];
-Vec3 TABLE_NORMALS[MAX_VERTICES];
-Vec2 TABLE_TEX_COORDS[MAX_VERTICES];
-
-int BED_VERTEX_COUNT;
-Vec3 BED_VERTICES[MAX_VERTICES];
-Vec3 BED_NORMALS[MAX_VERTICES];
-Vec2 BED_TEX_COORDS[MAX_VERTICES];
-
-int CHAIR_VERTEX_COUNT;
-Vec3 CHAIR_VERTICES[MAX_VERTICES];
-Vec3 CHAIR_NORMALS[MAX_VERTICES];
-Vec2 CHAIR_TEX_COORDS[MAX_VERTICES];
-
-int PILLOW_VERTEX_COUNT;
-Vec3 PILLOW_VERTICES[MAX_VERTICES];
-Vec3 PILLOW_NORMALS[MAX_VERTICES];
-Vec2 PILLOW_TEX_COORDS[MAX_VERTICES];
-
-int BOOK_VERTEX_COUNT;
-Vec3 BOOK_VERTICES[MAX_VERTICES];
-Vec3 BOOK_NORMALS[MAX_VERTICES];
-Vec2 BOOK_TEX_COORDS[MAX_VERTICES];
-
-int CUP_VERTEX_COUNT;
-Vec3 CUP_VERTICES[MAX_VERTICES];
-Vec3 CUP_NORMALS[MAX_VERTICES];
-Vec2 CUP_TEX_COORDS[MAX_VERTICES];
-
 void init_gl();
 void display();
 void idle();
@@ -125,7 +83,7 @@ void motion(int x, int y);
 void keyboard(unsigned char key, int x, int y);
 void keyboard_up(unsigned char key, int x, int y);
 void reshape(int width, int height);
-void draw_walls();
+void draw_bedroom();
 void draw_axis(int x, int y, int z);
 void draw_grid(int n);
 void display2();
@@ -282,7 +240,7 @@ void display() {
 
 	draw_grid(10);
 	draw_axis(1, 1, 1);
-	draw_walls();
+	draw_bedroom();
 
 	glutSwapBuffers();
 }
@@ -404,8 +362,8 @@ void buildRoom() {
 		glColor3f(LARANJA);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, tetoIndices);
 
-		glColor3f(CINZA);
-    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);
+		// glColor3f(CINZA);
+    // glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);
 }
 
 void buildTable() {
@@ -434,7 +392,7 @@ void buildTable() {
             glNormalPointer(GL_FLOAT, 0, &tableSeatMesh.vertices_normals[0]);
             glDrawElements(GL_TRIANGLES, tableSeatMesh.indices_pointers.size(), GL_UNSIGNED_INT, &tableSeatMesh.indices_pointers[0]);
         glPopMatrix();
-    glPopMatrix();
+  glPopMatrix();
 
 	glPushMatrix();
 			book1Mesh.material.active();
@@ -638,9 +596,9 @@ glPushMatrix();
 			glVertexPointer(3, GL_FLOAT, 0, &fan1Mesh.vertices_pointers[0]);
       glNormalPointer(GL_FLOAT, 0, &fan1Mesh.vertices_normals[0]);
       glDrawElements(GL_TRIANGLES, fan1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &fan1Mesh.indices_pointers[0]);
-			glPopMatrix();
+		glPopMatrix();
 
-			glPushMatrix();
+		glPushMatrix();
 							fan2Mesh.material.active();
 							fan2Mesh.material.dye();
 							glColor3f(JANELA);
@@ -649,9 +607,9 @@ glPushMatrix();
 							glNormalPointer(GL_FLOAT, 0, &fan2Mesh.vertices_normals[0]);
 							glDrawElements(GL_TRIANGLES, fan2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &fan2Mesh.indices_pointers[0]);
 
-			glPopMatrix();
+		glPopMatrix();
 
-			glPushMatrix();
+		glPushMatrix();
 							fan3Mesh.material.active();
 							fan3Mesh.material.dye();
 							glColor3f(AZUL);
@@ -660,29 +618,29 @@ glPushMatrix();
 							glNormalPointer(GL_FLOAT, 0, &fan3Mesh.vertices_normals[0]);
 							glDrawElements(GL_TRIANGLES, fan3Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &fan3Mesh.indices_pointers[0]);
 
-			glPopMatrix();
+		glPopMatrix();
 
-			glPushMatrix();
-							fan4Mesh.material.active();
-							fan4Mesh.material.dye();
-							glColor3f(JANELA);
+		glPushMatrix();
+						fan4Mesh.material.active();
+						fan4Mesh.material.dye();
+						glColor3f(JANELA);
 
-							glVertexPointer(3, GL_FLOAT, 0, &fan4Mesh.vertices_pointers[0]);
-							glNormalPointer(GL_FLOAT, 0, &fan4Mesh.vertices_normals[0]);
-							glDrawElements(GL_TRIANGLES, fan4Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &fan4Mesh.indices_pointers[0]);
+						glVertexPointer(3, GL_FLOAT, 0, &fan4Mesh.vertices_pointers[0]);
+						glNormalPointer(GL_FLOAT, 0, &fan4Mesh.vertices_normals[0]);
+						glDrawElements(GL_TRIANGLES, fan4Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &fan4Mesh.indices_pointers[0]);
 
-			glPopMatrix();
+		glPopMatrix();
 
-			glPushMatrix();
-							fan5Mesh.material.active();
-							fan5Mesh.material.dye();
-							glColor3f(RED);
+		glPushMatrix();
+						fan5Mesh.material.active();
+						fan5Mesh.material.dye();
+						glColor3f(RED);
 
-							glVertexPointer(3, GL_FLOAT, 0, &fan5Mesh.vertices_pointers[0]);
-							glNormalPointer(GL_FLOAT, 0, &fan5Mesh.vertices_normals[0]);
-							glDrawElements(GL_TRIANGLES, fan5Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &fan5Mesh.indices_pointers[0]);
+						glVertexPointer(3, GL_FLOAT, 0, &fan5Mesh.vertices_pointers[0]);
+						glNormalPointer(GL_FLOAT, 0, &fan5Mesh.vertices_normals[0]);
+						glDrawElements(GL_TRIANGLES, fan5Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &fan5Mesh.indices_pointers[0]);
 
-			glPopMatrix();
+		glPopMatrix();
     glPopMatrix();
 
 }
@@ -714,7 +672,7 @@ void buildBoardVanGogh(){
 		glPopMatrix();
 }
 
-void draw_walls() {
+void draw_bedroom() {
     glClear(GL_DEPTH_BUFFER_BIT);    
     
     glEnableClientState(GL_VERTEX_ARRAY);
