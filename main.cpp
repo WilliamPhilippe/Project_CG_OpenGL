@@ -139,6 +139,12 @@ objl::MeshInfo fan5Mesh;
 // TEXTURES
 
 Texture vanGoghPaiting;
+Texture doorTexture;
+Texture carpetTexture;
+Texture metalTexture;
+Texture woodTexture;
+Texture blanketTexture;
+Texture windowTexture;
 
 void loadTexture(const char* fileName, Texture* texture) 
 {
@@ -183,6 +189,24 @@ void setupTexture(Texture* texture)
 void setTextures() {
 	loadTexture("./imgs/textures/paiting-van-gogh.png", &vanGoghPaiting);
 	setupTexture(&vanGoghPaiting);
+
+	loadTexture("./imgs/textures/door.png", &doorTexture);
+	setupTexture(&doorTexture);
+
+	loadTexture("./imgs/textures/carpet.png", &carpetTexture);
+	setupTexture(&carpetTexture);
+
+	loadTexture("./imgs/textures/iron.png", &metalTexture);
+	setupTexture(&metalTexture);
+
+	loadTexture("./imgs/textures/wood.png", &woodTexture);
+	setupTexture(&woodTexture);
+
+	loadTexture("./imgs/textures/blanket.png", &blanketTexture);
+	setupTexture(&blanketTexture);
+
+	loadTexture("./imgs/textures/window.png", &windowTexture);
+	setupTexture(&windowTexture);
 }
 
 void init_gl() {
@@ -315,16 +339,45 @@ static GLubyte mesa[] = {31,30,29,28,27,26,25,24};
 
 static int eixoPortay, eixoJanelay, eixoVentiladorX = 0, velocidadeFan = 0;
 
-void buildDoor() {
+void buildDoor(Texture *texture) {
 	
 	glPushMatrix();
 			glTranslatef(8.0, 0, -9.998);
 			glRotatef ((GLfloat) eixoPortay, 0.0, 1.0, 0.0);
 		
 			glColor3f(JANELA);
-  	  glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaMovIndices);
-    	glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaMovTrazIndices);
+			glTranslatef(-3, 0, 0.001);
+				glEnable(GL_TEXTURE_2D);
+				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    		glBindTexture(GL_TEXTURE_2D, texture->id);
 
+				glBegin(GL_QUADS);
+					// FRONT FACE
+					glTexCoord2f(1.0, 1.0);
+					glVertex3f(0.0, 0.0, 0);
+
+					glTexCoord2f(0.0, 1.0);
+					glVertex3f(3, 0.0, 0);
+
+					glTexCoord2f(0.0, 0.0); 
+					glVertex3f(3, 4, 0);
+
+					glTexCoord2f(1.0, 0.0); 
+					glVertex3f(0.0, 4, 0);
+
+					// BACK FACE
+					glTexCoord2f(1.0, 0.0); 
+					glVertex3f(0.0, 4, 0);
+					glTexCoord2f(0.0, 0.0); 
+					glVertex3f(3, 4, 0);
+					glTexCoord2f(0.0, 1.0);
+					glVertex3f(3, 0.0, 0);
+					glTexCoord2f(1.0, 1.0);
+					glVertex3f(0.0, 0.0, 0);			
+					
+				glEnd();
+      glDisable(GL_TEXTURE_2D);
+			
 	glPopMatrix();
 }
 
@@ -332,10 +385,37 @@ void buildWindow() {
 	glPushMatrix();
 			glTranslatef(-9.998, 0, 3.0);
 			glRotatef ((GLfloat) eixoJanelay, 0.0, 1.0, 0.0);
-
+			glEnable(GL_TEXTURE_2D);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    	glBindTexture(GL_TEXTURE_2D, windowTexture.id);
 			glColor3f(JANELA);
-    	glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaIndices);
-    	glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, janelaTrazIndices);
+
+			glBegin(GL_QUADS);
+					// FRONT FACE
+					glTexCoord2f(1.0, 1.0);
+					glVertex3f(0.0, 3.0, 2.0);
+
+					glTexCoord2f(0.0, 1.0);
+					glVertex3f(0.0, 1.0, 2.0);
+
+					glTexCoord2f(0.0, 0.0); 
+					glVertex3f(0.0, 1.0, 0.0);
+
+					glTexCoord2f(1.0, 0.0); 
+					glVertex3f(0.0, 3.0, 0.0);
+
+					// BACK FACE
+					glTexCoord2f(1.0, 0.0); 
+					glVertex3f(0.0, 3.0, 0.0);
+					glTexCoord2f(0.0, 0.0); 
+					glVertex3f(0.0, 1.0, 0.0);
+					glTexCoord2f(0.0, 1.0);
+					glVertex3f(0.0, 1.0, 2.0);
+					glTexCoord2f(1.0, 1.0);
+					glVertex3f(0.0, 3.0, 2.0);			
+					
+				glEnd();
+	      glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
 }
@@ -362,11 +442,11 @@ void buildRoom() {
 		glColor3f(LARANJA);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, tetoIndices);
 
-		// glColor3f(CINZA);
-    // glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);
+		glColor3f(CINZA);
+    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);
 }
 
-void buildTable() {
+void buildTable(Texture *metal, Texture *wood) {
 	glPushMatrix();
 			tableMesh.material.active();
 			tableMesh.material.dye();
@@ -377,20 +457,36 @@ void buildTable() {
 
 			glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_NORMAL_ARRAY);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+			glEnable(GL_TEXTURE_2D);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+			glBindTexture(GL_TEXTURE_2D, wood->id);
 			glColor3f(JANELA);
 
 			glVertexPointer(3, GL_FLOAT, 0, &tableMesh.vertices_pointers[0]);
+			glTexCoordPointer(2, GL_FLOAT, 0, &tableSeatMesh.vertices_tex_coords[0]);
       glNormalPointer(GL_FLOAT, 0, &tableMesh.vertices_normals[0]);
       glDrawElements(GL_TRIANGLES, tableMesh.indices_pointers.size(), GL_UNSIGNED_INT, &tableMesh.indices_pointers[0]);
+			glDisable(GL_TEXTURE_2D);
 
 			glPushMatrix();
             tableSeatMesh.material.active();
             tableSeatMesh.material.dye();
+
+						glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+						glEnable(GL_TEXTURE_2D);
+						glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+						glBindTexture(GL_TEXTURE_2D, metal->id);
+
 						glColor3f(MESA);
 
             glVertexPointer(3, GL_FLOAT, 0, &tableSeatMesh.vertices_pointers[0]);
+			      glTexCoordPointer(2, GL_FLOAT, 0, &tableSeatMesh.vertices_tex_coords[0]);
             glNormalPointer(GL_FLOAT, 0, &tableSeatMesh.vertices_normals[0]);
             glDrawElements(GL_TRIANGLES, tableSeatMesh.indices_pointers.size(), GL_UNSIGNED_INT, &tableSeatMesh.indices_pointers[0]);
+				    glDisable(GL_TEXTURE_2D);
         glPopMatrix();
   glPopMatrix();
 
@@ -489,32 +585,30 @@ void buildTable() {
 
 }
 
-void buildBed() {
+void buildBed(Texture *wood, Texture *blanket) {
 
 		glPushMatrix();
-			bed1Mesh.material.active();
-			bed1Mesh.material.dye();
+			bed2Mesh.material.active();
+			bed2Mesh.material.dye();
       glScalef(0.05, 0.05, 0.05);
       glTranslatef(-160, 0,200);
 
 
 			glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_NORMAL_ARRAY);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+			glEnable(GL_TEXTURE_2D);
+      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+      glBindTexture(GL_TEXTURE_2D, wood->id);
 			glColor3f(MESA);
 
-			glVertexPointer(3, GL_FLOAT, 0, &bed1Mesh.vertices_pointers[0]);
-      glNormalPointer(GL_FLOAT, 0, &bed1Mesh.vertices_normals[0]);
-      glDrawElements(GL_TRIANGLES, bed1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &bed1Mesh.indices_pointers[0]);
-
-			glPushMatrix();
-            bed2Mesh.material.active();
-            bed2Mesh.material.dye();
-						glColor3f(MESA);
-
-            glVertexPointer(3, GL_FLOAT, 0, &bed2Mesh.vertices_pointers[0]);
-            glNormalPointer(GL_FLOAT, 0, &bed2Mesh.vertices_normals[0]);
-            glDrawElements(GL_TRIANGLES, bed2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &bed2Mesh.indices_pointers[0]);
-        glPopMatrix();
+			glVertexPointer(3, GL_FLOAT, 0, &bed2Mesh.vertices_pointers[0]);
+      glTexCoordPointer(2, GL_FLOAT, 0, &bed2Mesh.vertices_tex_coords[0]);
+      glNormalPointer(GL_FLOAT, 0, &bed2Mesh.vertices_normals[0]);
+      glDrawElements(GL_TRIANGLES, bed2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &bed2Mesh.indices_pointers[0]);
+      glDisable(GL_TEXTURE_2D);
+			
     glPopMatrix();
 
 		
@@ -528,11 +622,19 @@ void buildBed() {
 
 			glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_NORMAL_ARRAY);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+			glEnable(GL_TEXTURE_2D);
+      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+      glBindTexture(GL_TEXTURE_2D, blanket->id);
 			glColor3f(AMARELO);
 
 			glVertexPointer(3, GL_FLOAT, 0, &pillow1Mesh.vertices_pointers[0]);
+      glTexCoordPointer(2, GL_FLOAT, 0, &pillow1Mesh.vertices_tex_coords[0]);
       glNormalPointer(GL_FLOAT, 0, &pillow1Mesh.vertices_normals[0]);
       glDrawElements(GL_TRIANGLES, pillow1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &pillow1Mesh.indices_pointers[0]);
+      glDisable(GL_TEXTURE_2D);
+
     glPopMatrix();
 }
 
@@ -548,11 +650,18 @@ glPushMatrix();
 
 			glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_NORMAL_ARRAY);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+			glEnable(GL_TEXTURE_2D);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+			glBindTexture(GL_TEXTURE_2D, woodTexture.id);
 			glColor3f(AZUL);
 
 			glVertexPointer(3, GL_FLOAT, 0, &shelf1Mesh.vertices_pointers[0]);
+			glTexCoordPointer(2, GL_FLOAT, 0, &shelf1Mesh.vertices_tex_coords[0]);
       glNormalPointer(GL_FLOAT, 0, &shelf1Mesh.vertices_normals[0]);
       glDrawElements(GL_TRIANGLES, shelf1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &shelf1Mesh.indices_pointers[0]);
+			glDisable(GL_TEXTURE_2D);
 
 			glPushMatrix();
 							shelf2Mesh.material.active();
@@ -568,11 +677,19 @@ glPushMatrix();
 			glPushMatrix();
 							shelf3Mesh.material.active();
 							shelf3Mesh.material.dye();
+
+							glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+							glEnable(GL_TEXTURE_2D);
+							glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+							glBindTexture(GL_TEXTURE_2D, woodTexture.id);
 							glColor3f(AZUL);
 
 							glVertexPointer(3, GL_FLOAT, 0, &shelf3Mesh.vertices_pointers[0]);
+							glTexCoordPointer(2, GL_FLOAT, 0, &shelf3Mesh.vertices_tex_coords[0]);
 							glNormalPointer(GL_FLOAT, 0, &shelf3Mesh.vertices_normals[0]);
 							glDrawElements(GL_TRIANGLES, shelf3Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &shelf3Mesh.indices_pointers[0]);
+							glDisable(GL_TEXTURE_2D);
 
 			glPopMatrix();
     glPopMatrix();
@@ -645,20 +762,29 @@ glPushMatrix();
 
 }
 
-void buildCarpet() {
+void buildCarpet(Texture *texture) {
 	glPushMatrix();
 			carpet1Mesh.material.active();
 			carpet1Mesh.material.dye();
-			glTranslatef(0,0.01, 0);
+			glTranslatef(0,0.001, 0);
 
 
 			glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_NORMAL_ARRAY);
+      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+			glEnable(GL_TEXTURE_2D);
+      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+      glBindTexture(GL_TEXTURE_2D, texture->id);
+
 			glColor3f(LIGHTBLUE);
 
 			glVertexPointer(3, GL_FLOAT, 0, &carpet1Mesh.vertices_pointers[0]);
+      glTexCoordPointer(2, GL_FLOAT, 0, &carpet1Mesh.vertices_tex_coords[0]);
+
       glNormalPointer(GL_FLOAT, 0, &carpet1Mesh.vertices_normals[0]);
       glDrawElements(GL_TRIANGLES, carpet1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &carpet1Mesh.indices_pointers[0]);
+      glDisable(GL_TEXTURE_2D);
 
     glPopMatrix();
 }
@@ -679,13 +805,13 @@ void draw_bedroom() {
     glVertexPointer(3, GL_FLOAT, 0, vertices);
 
 
-		buildDoor();
+		buildDoor(&doorTexture);
 		buildWindow();
 		buildRoom();
-		buildTable();
-		buildBed();
+		buildTable(&metalTexture, &woodTexture);
+		buildBed(&woodTexture, &blanketTexture);
 		buildShelf();
-		buildCarpet();
+		buildCarpet(&carpetTexture);
 		buildBoardVanGogh();		
 }
 

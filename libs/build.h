@@ -47,47 +47,40 @@ void buildBoardTexture(Texture* texture, glm::vec3 color, glm::vec3 dimentions)
         glBegin(GL_QUADS);
 
             // Front Face
-            glNormal3fv(getNormal({ width, 0, 0 }, { 0, height, 0 }));
-            glTexCoord2f(1.0, 1.0); glVertex3f(0.0, 0.0, 0.0);
-            glTexCoord2f(0.0, 1.0); glVertex3f(width, 0.0, 0.0);
-            glTexCoord2f(0.0, 0.0); glVertex3f(width, height, 0.0);
-            glTexCoord2f(1.0, 0.0); glVertex3f(0.0, height, 0.0);
-            // Back Face
             glNormal3fv(getNormal({ width, 0, depth }, { 0, height, depth }));
-            glTexCoord2f(1.0, 1.0); glVertex3f(0.0, 0.0, depth);
-            glTexCoord2f(0.0, 1.0); glVertex3f(width, 0.0, depth);
-            glTexCoord2f(0.0, 0.0); glVertex3f(width, height, depth);
-            glTexCoord2f(1.0, 0.0); glVertex3f(0.0, height, depth);
+            glTexCoord2f(1.0, 1.0); 
+            glVertex3f(0.0, 0.0, depth);
+            glTexCoord2f(0.0, 1.0); 
+            glVertex3f(width, 0.0, depth);
+            glTexCoord2f(0.0, 0.0); 
+            glVertex3f(width, height, depth);
+            glTexCoord2f(1.0, 0.0); 
+            glVertex3f(0.0, height, depth);
 
         glEnd();
         
         glDisable(GL_TEXTURE_2D);
 
         glBegin(GL_QUADS);
-            // Left Face
-            glNormal3fv(getNormal({ 0, height, 0 }, { 0, 0, depth }));
-            glTexCoord2f(0.0, 0.0); glVertex3f(0.0, 0.0, 0.0);
-            glTexCoord2f(0.0, 1.0); glVertex3f(0.0, height, 0.0);
-            glTexCoord2f(1.0, 1.0); glVertex3f(0.0, height, depth);
-            glTexCoord2f(1.0, 0.0); glVertex3f(0.0, 0.0, depth);
-            // Right Face
-            glNormal3fv(getNormal({ 0, height, 0 }, { 0, 0, depth }));
-            glTexCoord2f(0.0, 0.0); glVertex3f(width, 0.0, 0.0);
-            glTexCoord2f(0.0, 1.0); glVertex3f(width, height, 0.0);
-            glTexCoord2f(1.0, 1.0); glVertex3f(width, height, depth);
-            glTexCoord2f(1.0, 0.0); glVertex3f(width, 0.0, depth);
-            // Bottom Face
-            glNormal3fv(getNormal({ width, 0, 0 }, { 0, 0, depth }));
-            glTexCoord2f(0.0, 0.0); glVertex3f(0.0, 0.0, 0.0);
-            glTexCoord2f(0.0, 1.0); glVertex3f(width, 0.0, 0.0);
-            glTexCoord2f(1.0, 1.0); glVertex3f(width, 0.0, depth);
-            glTexCoord2f(1.0, 0.0); glVertex3f(0.0, 0.0, depth);
-            // Top Face
-            glNormal3fv(getNormal({ width, 0, 0 }, { 0, 0, depth }));
-            glTexCoord2f(0.0, 0.0); glVertex3f(0.0, height, 0.0);
-            glTexCoord2f(0.0, 1.0); glVertex3f(width, height, 0.0);
-            glTexCoord2f(1.0, 1.0); glVertex3f(width, height, depth);
-            glTexCoord2f(1.0, 0.0); glVertex3f(0.0, height, depth);
+
+            // RIGHT FACE
+            glVertex3f(width, 0.0, 0.0);
+            glVertex3f(width, height, 0.0);
+            glVertex3f(width, height, depth);
+            glVertex3f(width, 0.0, depth);
+
+            //LEFT FACE
+            glVertex3f(0.0, 0.0, depth);
+            glVertex3f(0.0, height, depth);
+            glVertex3f(0.0, height, 0.0);
+            glVertex3f(0.0, 0.0, 0.0);
+
+            //BOTTOM FACE
+            glVertex3f(0.0, 0.0, depth);
+            glVertex3f(width, 0.0, depth);
+            glVertex3f(width, 0.0, 0.0);
+            glVertex3f(0.0, 0.0, 0.0);
+
         glEnd();
 
     glPopMatrix();
