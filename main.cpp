@@ -213,7 +213,27 @@ void init_gl() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+	
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_COLOR_MATERIAL);
+	
+	float globalAmb[] = {0.9f, 0.9f, 0.9f, 1.0f};
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmb);
 
+	float light0[4][4] = {
+		{0.1f, 0.1f, 0.1f, 0.2f}, // ambient
+		{0.8f, 0.8f, 0.8f, 1.0f}, // diffuse
+		{1.0f, 1.0f, 1.0f, 1.0f}, // specular
+		{0.0f, 0.0f, 1.0f, 1.0f}, // position
+	};
+
+	glLightfv(GL_LIGHT0, GL_AMBIENT, &light0[0][0]);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, &light0[1][0]);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, &light0[2][0]);
+	glLightfv(GL_LIGHT0, GL_POSITION, &light0[3][0]);
+
+	
 	setTextures();
 
 	tableMesh = tableLoader.LoadedMeshes[0].setup();
@@ -254,6 +274,9 @@ void display() {
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+
+
 
 	Vec3 fwd = forward(&CAM);
 	Vec3 u = up(&CAM);
@@ -529,6 +552,7 @@ void buildTable(Texture *metal, Texture *wood) {
       glEnableClientState(GL_NORMAL_ARRAY);
 			glColor3f(BLACK);
 
+
 			glVertexPointer(3, GL_FLOAT, 0, &cup1Mesh.vertices_pointers[0]);
       glNormalPointer(GL_FLOAT, 0, &cup1Mesh.vertices_normals[0]);
       glDrawElements(GL_TRIANGLES, cup1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &cup1Mesh.indices_pointers[0]);
@@ -640,6 +664,7 @@ void buildBed(Texture *wood, Texture *blanket) {
 
 void buildShelf() {
 glPushMatrix();
+	
 			shelf1Mesh.material.active();
 			shelf1Mesh.material.dye();
 			// glRotatef ((GLfloat) 90, 1.0, 0, 0.0);
