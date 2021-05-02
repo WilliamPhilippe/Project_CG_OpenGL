@@ -136,6 +136,12 @@ objl::MeshInfo fan3Mesh;
 objl::MeshInfo fan4Mesh;
 objl::MeshInfo fan5Mesh;
 
+objl::Loader lightFixtureLoader;
+objl::MeshInfo lightFixture1Mesh;
+objl::MeshInfo lightFixture2Mesh;
+objl::MeshInfo lightFixture3Mesh;
+objl::MeshInfo lightFixture4Mesh;
+
 // TEXTURES
 
 Texture vanGoghPaiting;
@@ -267,6 +273,11 @@ void init_gl() {
 	fan3Mesh = fanLoader.LoadedMeshes[2].setup();
 	fan4Mesh = fanLoader.LoadedMeshes[3].setup();
 	fan5Mesh = fanLoader.LoadedMeshes[4].setup();
+
+	lightFixture1Mesh = lightFixtureLoader.LoadedMeshes[0].setup();
+	lightFixture2Mesh = lightFixtureLoader.LoadedMeshes[1].setup();
+	lightFixture3Mesh = lightFixtureLoader.LoadedMeshes[2].setup();
+	lightFixture4Mesh = lightFixtureLoader.LoadedMeshes[3].setup();
 }
 
 void display() {
@@ -274,9 +285,6 @@ void display() {
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
-
-
 
 	Vec3 fwd = forward(&CAM);
 	Vec3 u = up(&CAM);
@@ -566,6 +574,60 @@ void buildTable(Texture *metal, Texture *wood) {
             glNormalPointer(GL_FLOAT, 0, &cup2Mesh.vertices_normals[0]);
             glDrawElements(GL_TRIANGLES, cup2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &cup2Mesh.indices_pointers[0]);
         glPopMatrix();
+    glPopMatrix();
+
+	glPushMatrix();
+			lightFixture1Mesh.material.active();
+			lightFixture1Mesh.material.dye();
+      glScalef(0.09, 0.09, 0.09);
+      glTranslatef(97, 19, 0);
+			glRotatef ((GLfloat) 180, 0.0, 1.0, 0.0);
+
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+      glEnableClientState(GL_NORMAL_ARRAY);
+			glColor3f(BLACK);
+
+			glVertexPointer(3, GL_FLOAT, 0, &lightFixture1Mesh.vertices_pointers[0]);
+      glNormalPointer(GL_FLOAT, 0, &lightFixture1Mesh.vertices_normals[0]);
+      glDrawElements(GL_TRIANGLES, lightFixture1Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &lightFixture1Mesh.indices_pointers[0]);
+
+			glPushMatrix();
+            lightFixture2Mesh.material.active();
+            lightFixture2Mesh.material.dye();
+						glColor3f(AMARELO);
+
+            glVertexPointer(3, GL_FLOAT, 0, &lightFixture2Mesh.vertices_pointers[0]);
+            glNormalPointer(GL_FLOAT, 0, &lightFixture2Mesh.vertices_normals[0]);
+            glDrawElements(GL_TRIANGLES, lightFixture2Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &lightFixture2Mesh.indices_pointers[0]);
+        glPopMatrix();
+		glPushMatrix();
+            lightFixture3Mesh.material.active();
+            lightFixture3Mesh.material.dye();
+						glColor3f(BLACK);
+
+            glVertexPointer(3, GL_FLOAT, 0, &lightFixture3Mesh.vertices_pointers[0]);
+            glNormalPointer(GL_FLOAT, 0, &lightFixture3Mesh.vertices_normals[0]);
+            glDrawElements(GL_TRIANGLES, lightFixture3Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &lightFixture3Mesh.indices_pointers[0]);
+        glPopMatrix();
+		glPushMatrix();
+            lightFixture4Mesh.material.active();
+            lightFixture4Mesh.material.dye();
+						glColor3f(BLACK);
+
+            glVertexPointer(3, GL_FLOAT, 0, &lightFixture4Mesh.vertices_pointers[0]);
+            glNormalPointer(GL_FLOAT, 0, &lightFixture4Mesh.vertices_normals[0]);
+            glDrawElements(GL_TRIANGLES, lightFixture4Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &lightFixture4Mesh.indices_pointers[0]);
+        glPopMatrix();
+		// glPushMatrix();
+        //     lightFixture5Mesh.material.active();
+        //     lightFixture5Mesh.material.dye();
+		// 				glColor3f(GREEN);
+
+        //     glVertexPointer(3, GL_FLOAT, 0, &lightFixture5Mesh.vertices_pointers[0]);
+        //     glNormalPointer(GL_FLOAT, 0, &lightFixture5Mesh.vertices_normals[0]);
+        //     glDrawElements(GL_TRIANGLES, lightFixture5Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &lightFixture5Mesh.indices_pointers[0]);
+        // glPopMatrix();
     glPopMatrix();
 
 		glPushMatrix();
@@ -1045,6 +1107,7 @@ int main(int argc, char** argv) {
 	shelfLoader.LoadFile("./obj/shelf/shelf.obj");
 	carpetLoader.LoadFile("./obj/carpet/carpet.obj");
 	fanLoader.LoadFile("./obj/fan/fan.obj");
+	lightFixtureLoader.LoadFile("./obj/light_fixture/light_fixture.obj");
 
 	unsigned int microsecond = 1000000;
 
