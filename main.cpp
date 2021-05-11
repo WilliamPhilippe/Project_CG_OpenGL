@@ -87,10 +87,10 @@ static GLfloat light1_diffuse[]	    = { 1.0, 1.0, 1.0, 1.0 };
 static GLfloat light1_specular[]	= { 1.0, 1.0, 1.0, 1.0 };
 static GLfloat light1_position[]	= { 0.0, 3.0, 0.0, 1.0 };
 static GLfloat light1_direction[]	= { 0.0, -1.0, 0.0 };
-static GLfloat light1_angle	        = 20.0;
+static GLfloat light1_angle	        = 10.0;
 static GLfloat light1_exponent	    = 2.0;
 
-static GLfloat lamp_offset[] = { 97, 0, 0};
+static GLfloat lamp_offset[] = { 97, 0, 0 };
 
 void init_gl();
 void display();
@@ -240,28 +240,29 @@ void init_gl() {
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
 	glEnable(GL_COLOR_MATERIAL);
+	glEnable(GL_LIGHTING);
+	// glEnable(GL_LIGHT0);
 	
-	float globalAmb[] = {0.9f, 0.9f, 0.9f, 1.0f};
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmb);
+	// float globalAmb[] = {0.9f, 0.9f, 0.9f, 1.0f};
+	// glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmb);
 
-	float light0[4][4] = {
-		{0.1f, 0.1f, 0.1f, 0.2f}, // ambient
-		{0.8f, 0.8f, 0.8f, 1.0f}, // diffuse
-		{1.0f, 1.0f, 1.0f, 1.0f}, // specular
-		{0.0f, 0.0f, 1.0f, 1.0f}, // position
-	};
+	// float light0[4][4] = {
+	// 	{0.1f, 0.1f, 0.1f, 0.2f}, // ambient
+	// 	{0.8f, 0.8f, 0.8f, 1.0f}, // diffuse
+	// 	{1.0f, 1.0f, 1.0f, 1.0f}, // specular
+	// 	{0.0f, 0.0f, 1.0f, 1.0f}, // position
+	// };
 
-	glLightfv(GL_LIGHT0, GL_AMBIENT, &light0[0][0]);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, &light0[1][0]);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, &light0[2][0]);
-	glLightfv(GL_LIGHT0, GL_POSITION, &light0[3][0]);
+	// glLightfv(GL_LIGHT0, GL_AMBIENT, &light0[0][0]);
+	// glLightfv(GL_LIGHT0, GL_DIFFUSE, &light0[1][0]);
+	// glLightfv(GL_LIGHT0, GL_SPECULAR, &light0[2][0]);
+	// glLightfv(GL_LIGHT0, GL_POSITION, &light0[3][0]);
 
 
 	
 
+   glEnable(GL_LIGHT1);
 
 	glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
    glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_diffuse);
@@ -272,7 +273,6 @@ void init_gl() {
    glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light1_direction);
    glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, light1_exponent);
 
-   glEnable(GL_LIGHT1);
 
 	
 	setTextures();
@@ -547,7 +547,7 @@ void buildRoom() {
 		glColor3f(LARANJA);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, tetoIndices);
 
-		buildFloor();
+		// buildFloor();
 }
 
 void buildTable(Texture *metal, Texture *wood) {
