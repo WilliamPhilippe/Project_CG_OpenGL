@@ -81,7 +81,7 @@ float light1[3][4] = {
 		{90.0f, 19.0f, 0.0f, 1.0f},
 		{1.0f, 1.0f, 1.0f, 1.0f},
 	};
-static GLfloat light1_offset[]	    = { 97.4, 0.4, -1 };
+static GLfloat light1_offset[]	    = { 97.4, 19.4, -1 };
 static GLfloat light1_ambient[]	    = { 0.2, 0.2, 0.2, 1.0 };
 static GLfloat light1_diffuse[]	    = { 1.0, 1.0, 1.0, 1.0 };
 static GLfloat light1_specular[]	= { 1.0, 1.0, 1.0, 1.0 };
@@ -90,7 +90,7 @@ static GLfloat light1_direction[]	= { 0.0, -1.0, 0.0 };
 static GLfloat light1_angle	        = 10.0;
 static GLfloat light1_exponent	    = 2.0;
 
-static GLfloat lamp_offset[] = { 97, 0, 0 };
+static GLfloat lamp_offset[] = { 97, 19, 0 };
 
 void init_gl();
 void display();
@@ -242,22 +242,22 @@ void init_gl() {
 	
 	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_LIGHTING);
-	// glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHT0);
 	
-	// float globalAmb[] = {0.9f, 0.9f, 0.9f, 1.0f};
-	// glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmb);
+	float globalAmb[] = {0.9f, 0.9f, 0.9f, 1.0f};
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmb);
 
-	// float light0[4][4] = {
-	// 	{0.1f, 0.1f, 0.1f, 0.2f}, // ambient
-	// 	{0.8f, 0.8f, 0.8f, 1.0f}, // diffuse
-	// 	{1.0f, 1.0f, 1.0f, 1.0f}, // specular
-	// 	{0.0f, 0.0f, 1.0f, 1.0f}, // position
-	// };
+	float light0[4][4] = {
+		{0.1f, 0.1f, 0.1f, 0.2f}, // ambient
+		{0.8f, 0.8f, 0.8f, 1.0f}, // diffuse
+		{1.0f, 1.0f, 1.0f, 1.0f}, // specular
+		{0.0f, 0.0f, 1.0f, 1.0f}, // position
+	};
 
-	// glLightfv(GL_LIGHT0, GL_AMBIENT, &light0[0][0]);
-	// glLightfv(GL_LIGHT0, GL_DIFFUSE, &light0[1][0]);
-	// glLightfv(GL_LIGHT0, GL_SPECULAR, &light0[2][0]);
-	// glLightfv(GL_LIGHT0, GL_POSITION, &light0[3][0]);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, &light0[0][0]);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, &light0[1][0]);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, &light0[2][0]);
+	glLightfv(GL_LIGHT0, GL_POSITION, &light0[3][0]);
 
 
 	
@@ -547,7 +547,7 @@ void buildRoom() {
 		glColor3f(LARANJA);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, tetoIndices);
 
-		// buildFloor();
+		buildFloor();
 }
 
 void buildTable(Texture *metal, Texture *wood) {
@@ -983,7 +983,7 @@ void draw_bedroom() {
 		buildTable(&metalTexture, &woodTexture);
 		buildBed(&woodTexture, &blanketTexture);
 		buildShelf();
-		// buildCarpet(&carpetTexture);
+		buildCarpet(&carpetTexture);
 		buildBoardVanGogh();		
 }
 
