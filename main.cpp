@@ -76,6 +76,22 @@ Transform CAM;
 int KEYBOARD[128] = {0};
 Vec2 MOTION;
 
+float light1[3][4] = {
+		{0.0f, -1.0f, -1.0f},
+		{90.0f, 19.0f, 0.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f, 1.0f},
+	};
+static GLfloat light1_offset[]	    = { 97.4, 19.4, -1 };
+static GLfloat light1_ambient[]	    = { 0.2, 0.2, 0.2, 1.0 };
+static GLfloat light1_diffuse[]	    = { 1.0, 1.0, 1.0, 1.0 };
+static GLfloat light1_specular[]	= { 1.0, 1.0, 1.0, 1.0 };
+static GLfloat light1_position[]	= { 0.0, 3.0, 0.0, 1.0 };
+static GLfloat light1_direction[]	= { 0.0, -1.0, 0.0 };
+static GLfloat light1_angle	        = 10.0;
+static GLfloat light1_exponent	    = 2.0;
+
+static GLfloat lamp_offset[] = { 97, 19, 0 };
+
 void init_gl();
 void display();
 void idle();
@@ -151,6 +167,7 @@ Texture metalTexture;
 Texture woodTexture;
 Texture blanketTexture;
 Texture windowTexture;
+Texture floorTexture;
 
 void loadTexture(const char* fileName, Texture* texture) 
 {
@@ -213,6 +230,9 @@ void setTextures() {
 
 	loadTexture("./imgs/textures/window.png", &windowTexture);
 	setupTexture(&windowTexture);
+
+	loadTexture("./imgs/textures/floor.png", &floorTexture);
+	setupTexture(&floorTexture);
 }
 
 void init_gl() {
@@ -220,9 +240,9 @@ void init_gl() {
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	
+	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-	glEnable(GL_COLOR_MATERIAL);
 	
 	float globalAmb[] = {0.9f, 0.9f, 0.9f, 1.0f};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmb);
@@ -238,6 +258,21 @@ void init_gl() {
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, &light0[1][0]);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, &light0[2][0]);
 	glLightfv(GL_LIGHT0, GL_POSITION, &light0[3][0]);
+
+
+	
+
+   glEnable(GL_LIGHT1);
+
+	glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
+   glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_diffuse);
+   glLightfv(GL_LIGHT1, GL_SPECULAR, light1_specular);
+   glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+   
+   glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, light1_angle);
+   glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light1_direction);
+   glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, light1_exponent);
+
 
 	
 	setTextures();
@@ -355,6 +390,7 @@ static GLfloat vertices[108]={
 
 static GLubyte trasIndices[] = {1,2,3,0};
 static GLubyte portaIndices[] = {12,13,14,15};
+static GLubyte portaTrasIndices[] = {15,14,13,12};
 static GLubyte portaMovIndices[] = {20,21,22,23};
 static GLubyte portaMovTrazIndices[] = {23,22,21,20};
 static GLubyte molduraJanelaIndices[] = {32,33,35,34};
@@ -362,6 +398,7 @@ static GLubyte janelaIndices[] = {16,17,19,18};
 static GLubyte janelaTrazIndices[] = {18,19,17,16};
 static GLubyte leftIndices[] = {4,3,2,5};
 static GLubyte frenteIndices[] = {7,4,5,6};
+static GLubyte frenteTrasIndices[] = {0,3,2,1};
 static GLubyte rightIndices[] = {7,6,1,0};
 static GLubyte tetoIndices[] = {5,2,1,6};
 static GLubyte pisoIndices[] = {8,9,11,10};
@@ -451,12 +488,46 @@ void buildWindow() {
 	glPopMatrix();
 }
 
+void buildFloor() {
+	glPushMatrix();
+			// glTranslatef(-9.998, 0, 3.0);
+			// glRotatef ((GLfloat) eixoJanelay, 0.0, 1.0, 0.0);
+			glEnable(GL_TEXTURE_2D);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    	glBindTexture(GL_TEXTURE_2D, floorTexture.id);
+			glColor3f(CINZA);
+
+			glBegin(GL_QUADS);
+					// FRONT FACE
+					glTexCoord2f(1.0, 1.0);
+					glVertex3f(10.0, -0.0, -10.0);
+
+					glTexCoord2f(0.0, 1.0);
+					glVertex3f(-10.0, 0.0, -10.0);
+
+
+					glTexCoord2f(0.0, 0.0); 
+					glVertex3f(  -10.0,  -0.0,   10.0);
+
+					glTexCoord2f(1.0, 0.0); 
+					glVertex3f(10.0,  -0.0,   10.0);
+
+					
+				glEnd();
+	      glDisable(GL_TEXTURE_2D);
+
+	glPopMatrix();
+}
+
 void buildRoom() {
 		glColor3f(BLACK);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, molduraJanelaIndices);
 
 		glColor3f(BLACK);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaIndices);
+
+	glColor3f(BLACK);
+    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaTrasIndices);
 
     glColor3f(PAREDE);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, trasIndices);
@@ -467,14 +538,16 @@ void buildRoom() {
     glColor3f(PAREDE);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, frenteIndices);
 
+	glColor3f(PAREDE);
+    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, frenteTrasIndices);
+
 		glColor3f(PAREDE2);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, rightIndices);
 
 		glColor3f(LARANJA);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, tetoIndices);
 
-		glColor3f(CINZA);
-    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);
+		buildFloor();
 }
 
 void buildTable(Texture *metal, Texture *wood) {
@@ -579,10 +652,11 @@ void buildTable(Texture *metal, Texture *wood) {
 	glPushMatrix();
 			lightFixture1Mesh.material.active();
 			lightFixture1Mesh.material.dye();
-      glScalef(0.09, 0.09, 0.09);
-      glTranslatef(97, 19, 0);
+    //   glTranslatef(lamp_offset[0], lamp_offset[1], lamp_offset[2]);
+    // //   glTranslatef(97, 19, 0);
+        glScalef(0.09, 0.09, 0.09);
+glTranslatef(lamp_offset[0], lamp_offset[1], lamp_offset[2]);
 			glRotatef ((GLfloat) 180, 0.0, 1.0, 0.0);
-
 
 			glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_NORMAL_ARRAY);
@@ -629,6 +703,17 @@ void buildTable(Texture *metal, Texture *wood) {
         //     glDrawElements(GL_TRIANGLES, lightFixture5Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &lightFixture5Mesh.indices_pointers[0]);
         // glPopMatrix();
     glPopMatrix();
+
+		glEnable(GL_LIGHT1);
+	glPushMatrix();
+
+		glTranslatef(light1_offset[0], light1_offset[1], light1_offset[2]);
+
+            glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+            glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, light1_angle);
+            glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light1_direction);
+            glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, light1_exponent);
+	glPopMatrix();
 
 		glPushMatrix();
 			chair1Mesh.material.active();
