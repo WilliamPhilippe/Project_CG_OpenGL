@@ -76,6 +76,22 @@ Transform CAM;
 int KEYBOARD[128] = {0};
 Vec2 MOTION;
 
+float light1[3][4] = {
+		{0.0f, -1.0f, -1.0f},
+		{90.0f, 19.0f, 0.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f, 1.0f},
+	};
+static GLfloat light1_offset[]	    = { 97.4, 0.4, -1 };
+static GLfloat light1_ambient[]	    = { 0.2, 0.2, 0.2, 1.0 };
+static GLfloat light1_diffuse[]	    = { 1.0, 1.0, 1.0, 1.0 };
+static GLfloat light1_specular[]	= { 1.0, 1.0, 1.0, 1.0 };
+static GLfloat light1_position[]	= { 0.0, 3.0, 0.0, 1.0 };
+static GLfloat light1_direction[]	= { 0.0, -1.0, 0.0 };
+static GLfloat light1_angle	        = 20.0;
+static GLfloat light1_exponent	    = 2.0;
+
+static GLfloat lamp_offset[] = { 97, 0, 0};
+
 void init_gl();
 void display();
 void idle();
@@ -234,24 +250,25 @@ void init_gl() {
 		{0.0f, 0.0f, 1.0f, 1.0f}, // position
 	};
 
-	float light1[3][4] = {
-		{0.0f, -1.0f, -1.0f},
-		{97.0f, 19.0f, 0.0f, 1.0f},
-		{1.0f, 1.0f, 1.0f, 1.0f},
-	};
-
 	glLightfv(GL_LIGHT0, GL_AMBIENT, &light0[0][0]);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, &light0[1][0]);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, &light0[2][0]);
 	glLightfv(GL_LIGHT0, GL_POSITION, &light0[3][0]);
 
-	glEnable(GL_LIGHT1);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, &light1[2][0]);
-	glLightfv(GL_LIGHT1, GL_POSITION, &light1[1][0]);
 
-	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, &light1[0][0]);
-    glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 5);
-    glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 6);
+	
+
+
+	glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient);
+   glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_diffuse);
+   glLightfv(GL_LIGHT1, GL_SPECULAR, light1_specular);
+   glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+   
+   glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, light1_angle);
+   glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light1_direction);
+   glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, light1_exponent);
+
+   glEnable(GL_LIGHT1);
 
 	
 	setTextures();
@@ -601,10 +618,11 @@ void buildTable(Texture *metal, Texture *wood) {
 	glPushMatrix();
 			lightFixture1Mesh.material.active();
 			lightFixture1Mesh.material.dye();
-      glScalef(0.09, 0.09, 0.09);
-      glTranslatef(97, 19, 0);
+    //   glTranslatef(lamp_offset[0], lamp_offset[1], lamp_offset[2]);
+    // //   glTranslatef(97, 19, 0);
+        glScalef(0.09, 0.09, 0.09);
+glTranslatef(lamp_offset[0], lamp_offset[1], lamp_offset[2]);
 			glRotatef ((GLfloat) 180, 0.0, 1.0, 0.0);
-
 
 			glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_NORMAL_ARRAY);
@@ -651,6 +669,17 @@ void buildTable(Texture *metal, Texture *wood) {
         //     glDrawElements(GL_TRIANGLES, lightFixture5Mesh.indices_pointers.size(), GL_UNSIGNED_INT, &lightFixture5Mesh.indices_pointers[0]);
         // glPopMatrix();
     glPopMatrix();
+
+		glEnable(GL_LIGHT1);
+	glPushMatrix();
+
+		glTranslatef(light1_offset[0], light1_offset[1], light1_offset[2]);
+
+            glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+            glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, light1_angle);
+            glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light1_direction);
+            glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, light1_exponent);
+	glPopMatrix();
 
 		glPushMatrix();
 			chair1Mesh.material.active();
@@ -920,7 +949,7 @@ void draw_bedroom() {
 		buildTable(&metalTexture, &woodTexture);
 		buildBed(&woodTexture, &blanketTexture);
 		buildShelf();
-		buildCarpet(&carpetTexture);
+		// buildCarpet(&carpetTexture);
 		buildBoardVanGogh();		
 }
 
