@@ -167,6 +167,7 @@ Texture metalTexture;
 Texture woodTexture;
 Texture blanketTexture;
 Texture windowTexture;
+Texture floorTexture;
 
 void loadTexture(const char* fileName, Texture* texture) 
 {
@@ -229,6 +230,9 @@ void setTextures() {
 
 	loadTexture("./imgs/textures/window.png", &windowTexture);
 	setupTexture(&windowTexture);
+
+	loadTexture("./imgs/textures/floor.png", &floorTexture);
+	setupTexture(&floorTexture);
 }
 
 void init_gl() {
@@ -484,6 +488,37 @@ void buildWindow() {
 	glPopMatrix();
 }
 
+void buildFloor() {
+	glPushMatrix();
+			// glTranslatef(-9.998, 0, 3.0);
+			// glRotatef ((GLfloat) eixoJanelay, 0.0, 1.0, 0.0);
+			glEnable(GL_TEXTURE_2D);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    	glBindTexture(GL_TEXTURE_2D, floorTexture.id);
+			glColor3f(CINZA);
+
+			glBegin(GL_QUADS);
+					// FRONT FACE
+					glTexCoord2f(1.0, 1.0);
+					glVertex3f(10.0, -0.0, -10.0);
+
+					glTexCoord2f(0.0, 1.0);
+					glVertex3f(-10.0, 0.0, -10.0);
+
+
+					glTexCoord2f(0.0, 0.0); 
+					glVertex3f(  -10.0,  -0.0,   10.0);
+
+					glTexCoord2f(1.0, 0.0); 
+					glVertex3f(10.0,  -0.0,   10.0);
+
+					
+				glEnd();
+	      glDisable(GL_TEXTURE_2D);
+
+	glPopMatrix();
+}
+
 void buildRoom() {
 		glColor3f(BLACK);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, molduraJanelaIndices);
@@ -512,8 +547,7 @@ void buildRoom() {
 		glColor3f(LARANJA);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, tetoIndices);
 
-		glColor3f(CINZA);
-    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, pisoIndices);
+		buildFloor();
 }
 
 void buildTable(Texture *metal, Texture *wood) {
