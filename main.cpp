@@ -234,10 +234,24 @@ void init_gl() {
 		{0.0f, 0.0f, 1.0f, 1.0f}, // position
 	};
 
+	float light1[3][4] = {
+		{0.0f, -1.0f, -1.0f},
+		{97.0f, 19.0f, 0.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f, 1.0f},
+	};
+
 	glLightfv(GL_LIGHT0, GL_AMBIENT, &light0[0][0]);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, &light0[1][0]);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, &light0[2][0]);
 	glLightfv(GL_LIGHT0, GL_POSITION, &light0[3][0]);
+
+	glEnable(GL_LIGHT1);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, &light1[2][0]);
+	glLightfv(GL_LIGHT1, GL_POSITION, &light1[1][0]);
+
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, &light1[0][0]);
+    glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 5);
+    glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 6);
 
 	
 	setTextures();
@@ -355,6 +369,7 @@ static GLfloat vertices[108]={
 
 static GLubyte trasIndices[] = {1,2,3,0};
 static GLubyte portaIndices[] = {12,13,14,15};
+static GLubyte portaTrasIndices[] = {15,14,13,12};
 static GLubyte portaMovIndices[] = {20,21,22,23};
 static GLubyte portaMovTrazIndices[] = {23,22,21,20};
 static GLubyte molduraJanelaIndices[] = {32,33,35,34};
@@ -362,6 +377,7 @@ static GLubyte janelaIndices[] = {16,17,19,18};
 static GLubyte janelaTrazIndices[] = {18,19,17,16};
 static GLubyte leftIndices[] = {4,3,2,5};
 static GLubyte frenteIndices[] = {7,4,5,6};
+static GLubyte frenteTrasIndices[] = {0,3,2,1};
 static GLubyte rightIndices[] = {7,6,1,0};
 static GLubyte tetoIndices[] = {5,2,1,6};
 static GLubyte pisoIndices[] = {8,9,11,10};
@@ -458,6 +474,9 @@ void buildRoom() {
 		glColor3f(BLACK);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaIndices);
 
+	glColor3f(BLACK);
+    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, portaTrasIndices);
+
     glColor3f(PAREDE);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, trasIndices);
 
@@ -466,6 +485,9 @@ void buildRoom() {
 
     glColor3f(PAREDE);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, frenteIndices);
+
+	glColor3f(PAREDE);
+    glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, frenteTrasIndices);
 
 		glColor3f(PAREDE2);
     glDrawElements(GL_POLYGON, 4, GL_UNSIGNED_BYTE, rightIndices);
